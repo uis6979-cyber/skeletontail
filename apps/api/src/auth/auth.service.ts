@@ -9,42 +9,39 @@ import {
 import * as bcrypt from "bcryptjs";
 import { Queue } from "bullmq";
 import { randomUUID } from "crypto";
+import * as jwt from "jsonwebtoken";
 import { PrismaService } from "../prisma/prisma.service";
 import { UsersService } from "../users/users.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 
 /**
- * AuthService
- *
- * Orchestrates all authentication-related business logic, including user registration,
- * login, and password recovery. It interacts with the database via Prisma,
- * manages password hashing, and queues email notifications.
+ * Handles authentication business logic including session management,
+ * user registration, and secure password recovery workflows.
  */
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly usersService: UsersService,
     private readonly prisma: PrismaService,
-    @InjectQueue("email") private emailQueue: Queue,
+    @InjectQueue("email") private readonly emailQueue: Queue,
   ) {}
 
+  /**
+   * Authenticates user and returns base identity for token generation.
+   */
   async login(dto: LoginDto) {
-    /**
-     * Authenticates a user with provided credentials.
-     * Throws UnauthorizedException if user not found or password invalid.
-     */
     const user = await this.usersService.findByEmail(dto.email);
 
     if (!user) {
-      throw new UnauthorizedException("messages.errors.userNotFound");
+      throw new UnauthorizedException("login.messages.errors.userNotFound");
     }
 
     const valid = await bcrypt.compare(dto.password, user.password);
-
     if (!valid) {
-      throw new UnauthorizedException("messages.errors.invalidPassword");
+      throw new UnauthorizedException("login.messages.errors.invalidPassword");
     }
 
     return {
@@ -56,14 +53,14 @@ export class AuthService {
   async register(dto: RegisterDto) {
     /**
      * Registers a new user.
-     * Throws ConflictException if email already exists.
+     * Enforces email uniqueness and secures credentials.
      */
     const existingUser = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
 
     if (existingUser) {
-      throw new ConflictException("messages.errors.emailAlreadyExists");
+      throw new ConflictException("signup.messages.errors.emailAlreadyExists");
     }
 
     const hashed = await bcrypt.hash(dto.password, 10);
@@ -84,56 +81,55 @@ export class AuthService {
   }
 
   /**
-   * Initiates the password recovery process.
-   * Generates a reset token, stores it, and queues an email for the user.
-   * @param email The email of the user requesting a password reset.
+   * Orchestrates the password recovery initiation.
+   * Generates a short-lived secure token and offloads email delivery to the queue.
    */
   async sendForgotPassword(email: string) {
     try {
-      this.logger.log(`Received password reset request for email: ${email}`);
-
-      const user = await this.prisma.user.findUnique({
-        where: { email },
-      });
+      const user = await this.prisma.user.findUnique({ where: { email } });
 
       if (!user) {
-        // Using UnauthorizedException for security reasons to avoid leaking user existence
+        // Security: Avoid leaking user existence to mitigate enumeration attacks
         throw new UnauthorizedException(
           "resetPassword.messages.errors.userNotFound",
         );
       }
 
-      // Generate a unique, cryptographically secure token
       const token = randomUUID();
 
-      // Store the token in the database with an expiration time
+      // Persistence: 15-minute TTL for recovery tokens
       await this.prisma.passwordResetToken.create({
         data: {
           token,
           userId: user.id,
-          expiresAt: new Date(Date.now() + 1000 * 60 * 15), // Token valid for 15 minutes
+          expiresAt: new Date(Date.now() + 1000 * 60 * 15),
         },
       });
 
-      // Add an email job to the queue for asynchronous processing
-      const job = await this.emailQueue.add("reset-password", {
-        email,
-        token,
-      });
+      // Asynchronous Processing: Queue the email job
+      const job = await this.emailQueue.add(
+        "reset-password",
+        {
+          email,
+          token,
+        },
+        {
+          attempts: 3,
+          backoff: { type: "exponential", delay: 1000 },
+        },
+      );
 
       this.logger.log(
         `Password reset email queued for ${email}, Job ID: ${job.id}`,
-      );
+      this.logger.log(`Reset email queued for ${email} [Job: ${job.id}]`);
+
       return {
         success: true,
-        message: "resetPassword.messages.success.resetEmailQueued",
+        message: "resetPassword.messages.success.resetEmailSent",
         jobId: job.id,
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to queue reset email for ${email}: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Reset email queueing failed: ${error.message}`);
       throw new BadRequestException(
         "resetPassword.messages.errors.failedToSendResetEmail",
       );
@@ -141,61 +137,69 @@ export class AuthService {
   }
 
   /**
-   * Resets a user's password using a valid token.
-   * @param dto Contains the token, new password, and confirmation.
-   * Throws BadRequestException for invalid/expired tokens or password mismatch.
+   * Finalizes the password reset using the provided recovery token.
+   * Implements strict validation for token usage and expiry.
    */
   async resetPassword(dto: {
     token: string;
     password: string;
     confirmPassword: string;
   }) {
-    // Client-side validation should ideally prevent this, but backend must re-validate
     if (dto.password !== dto.confirmPassword) {
       throw new BadRequestException(
         "resetPassword.messages.errors.passwordsDontMatch",
       );
     }
 
-    // Retrieve the reset token record and associated user
     const record = await this.prisma.passwordResetToken.findUnique({
       where: { token: dto.token },
       include: { user: true },
     });
 
     if (!record) {
-      throw new BadRequestException("Invalid token");
+      throw new BadRequestException("resetPassword.messages.errors.invalidToken");
     }
 
-    // Check if the token has already been used
     if (record.used) {
       throw new BadRequestException(
         "resetPassword.messages.errors.tokenAlreadyUsed",
       );
     }
 
-    // Check if the token has expired
     if (record.expiresAt < new Date()) {
       throw new BadRequestException(
         "resetPassword.messages.errors.tokenExpired",
       );
     }
 
-    // Hash the new password before updating
     const hashed = await bcrypt.hash(dto.password, 10);
 
-    // Update the user's password
-    await this.prisma.user.update({
-      where: { id: record.userId },
-      data: { password: hashed },
-    });
-
-    // Mark the token as used to prevent replay attacks
-    await this.prisma.passwordResetToken.update({
-      where: { id: record.id },
-      data: { used: true },
-    });
+    // Atomically update user and invalidate token
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: record.userId },
+        data: { password: hashed },
+      }),
+      this.prisma.passwordResetToken.update({
+        where: { id: record.id },
+        data: { used: true },
+      }),
+    ]);
 
     return { message: "resetPassword.messages.success.passwordUpdated" };
+  }
+
+  /**
+   * Generates a JWT for the authenticated user session.
+   */
+  async generateToken(user: any) {
+    return jwt.sign(
+      {
+        sub: user.id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: "1d" },
+    );
   }
 }
