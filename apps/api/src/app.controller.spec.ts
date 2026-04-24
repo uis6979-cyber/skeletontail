@@ -1,8 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
-describe('AppController', () => {
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+/**
+ * AppController Unit Tests
+ *
+ * Validates the core entry point of the API, specifically focusing
+ * on availability and health check responses.
+ */
+describe("AppController", () => {
   let appController: AppController;
 
   beforeEach(async () => {
@@ -14,9 +19,12 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe("healthCheck", () => {
+    it("should return api status ok and a timestamp", () => {
+      const result = appController.healthCheck();
+      expect(result.status).toBe("ok");
+      expect(result.message).toContain("API running");
+      expect(result).toHaveProperty("timestamp");
     });
   });
 });
