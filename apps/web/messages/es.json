@@ -1,0 +1,292 @@
+{
+  "login": {
+    "title": "Iniciar sesión",
+    "labels": {
+      "email": "Correo",
+      "password": "Contraseña",
+      "submit": "Entrar",
+      "loading": "Iniciando sesión...",
+      "invalid": "Credenciales inválidas.",
+      "description": "¡Introduce tu correo y contraseña para entrar!",
+      "passwordPlaceholder": "Introduce tu contraseña",
+      "rememberMe": "Mantener sesión iniciada",
+      "forgotPassword": "¿Has olvidado la contraseña?",
+      "noAccount": "¿No tienes una cuenta?",
+      "signUp": "Registrarse"
+    },
+    "messages": {
+      "errors": {
+        "emailRequired": "El correo es obligatorio.",
+        "emailInvalid": "Formato de correo inválido.",
+        "passwordRequired": "La contraseña es obligatoria.",
+        "userNotFound": "Usuario no encontrado.",
+        "invalidPassword": "Contraseña inválida.",
+        "unknownError": "Ha ocurrido un error desconocido."
+      },
+      "success": {
+        "loginSuccessful": "Inicio de sesión exitoso",
+        "logoutSuccessful": "Sesión cerrada correctamente."
+      }
+    }
+  },
+  "signup": {
+    "title": "Crear cuenta",
+    "labels": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo",
+      "password": "Contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "submit": "Crear cuenta",
+      "loading": "Creando...",
+      "hasAccount": "¿Ya tienes una cuenta?",
+      "signIn": "Iniciar sesión",
+      "firstNamePlaceholder": "Juan",
+      "lastNamePlaceholder": "Pérez",
+      "emailPlaceholder": "correo@gmail.com",
+      "passwordPlaceholder": "Introduce tu contraseña",
+      "confirmPasswordPlaceholder": "Confirma tu contraseña"
+    },
+    "messages": {
+      "errors": {
+        "passwordsDontMatch": "Las contraseñas no coinciden",
+        "emailAlreadyExists": "Correo registrado anteriormente",
+        "unknownError": "Error desconocido",
+        "firstNameRequired": "El nombre es obligatorio.",
+        "lastNameRequired": "El apellido es obligatorio.",
+        "emailRequired": "El correo es obligatorio.",
+        "passwordRequired": "La contraseña es obligatoria.",
+        "emailInvalid": "Formato de correo inválido.",
+        "passwordMinLength": "La contraseña debe tener al menos 6 caracteres.",
+        "confirmPasswordRequired": "La confirmación de contraseña es obligatoria."
+      },
+      "success": {
+        "accountCreated": "Cuenta creada correctamente"
+      }
+    }
+  },
+  "resetPassword": {
+    "title": "Recuperar contraseña",
+    "titleNew": "Establecer nueva contraseña",
+    "subtitle": "Ingresa tu email y te enviaremos un enlace de recuperación",
+    "labels": {
+      "email": "Correo",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar contraseña",
+      "sendLink": "Enviar enlace",
+      "resetSubmit": "Actualizar contraseña",
+      "backToLogin": "Volver al inicio de sesión"
+    },
+    "messages": {
+      "loading": "Enviando...",
+      "loadingUpdate": "Actualizando...",
+      "success": {
+        "resetEmailSent": "Correo de recuperación en cola con éxito",
+        "passwordUpdated": "Contraseña actualizada correctamente"
+      },
+      "errors": {
+        "emailRequired": "El email es obligatorio",
+        "passwordRequired": "La contraseña es obligatoria",
+        "passwordsDontMatch": "Las contraseñas no coinciden",
+        "invalidToken": "Enlace de recuperación inválido o expirado",
+        "tokenAlreadyUsed": "Este enlace de recuperación ya ha sido utilizado.",
+        "tokenExpired": "Este enlace de recuperación ha expirado.",
+        "userNotFound": "Usuario no encontrado.",
+        "failedToSendResetEmail": "Error al enviar el correo de recuperación. Por favor, inténtelo de nuevo más tarde.",
+        "unknownError": "Ha ocurrido un error inesperado"
+      }
+    }
+  },
+  "common": {
+    "buttons": {
+      "accept": "Aceptar",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "delete": "Eliminar",
+      "edit": "Editar",
+      "confirm": "Confirmar",
+      "close": "Cerrar",
+      "back": "Volver"
+    },
+    "messages": {
+      "success": "Operación completada con éxito",
+      "error": "Ha ocurrido un error inesperado. Inténtalo de nuevo",
+      "loading": "Cargando...",
+      "unauthorized": "No tienes permisos para realizar esta acción",
+      "userNotFound": "Usuario no encontrado.",
+      "noData": "No hay datos disponibles",
+      "apiRunning": "API en ejecución 🚀",
+      "languages": {
+        "en": "Inglés",
+        "es": "Español"
+      }
+    },
+    "userDropdown": {
+      "userNamePlaceholder": "Nombre de Usuario",
+      "userEmailPlaceholder": "usuario@ejemplo.com",
+      "noEmail": "Sin correo",
+      "avatarAlt": "Avatar de usuario",
+      "editProfile": "Editar perfil",
+      "accountSettings": "Configuración de cuenta",
+      "support": "Soporte",
+      "signOut": "Cerrar sesión"
+    }
+  },
+  "dashboard": {
+    "title": "Panel de Control",
+    "metadata": {
+      "title": "Panel de Control E-commerce Next.js | TailAdmin",
+      "description": "Esta es la página principal de Next.js para la plantilla de Dashboard TailAdmin"
+    }
+  },
+  "header": {
+    "searchPlaceholder": "Buscar o escribir comando...",
+    "toggleSidebar": "Alternar barra lateral",
+    "toggleHeaderMenu": "Alternar menú de cabecera",
+    "logoAlt": "Logo"
+  },
+  "sidebar": {
+    "sections": {
+      "menu": "Menú",
+      "others": "Otros"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "users": "Usuarios",
+      "ecommerce": "Ecommerce",
+      "calendar": "Calendario",
+      "userProfile": "Perfil de Usuario",
+      "forms": "Formularios",
+      "formElements": "Elementos de Formulario",
+      "tables": "Tablas",
+      "basicTables": "Tablas Básicas",
+      "pages": "Páginas",
+      "blankPage": "Página en Blanco",
+      "error404": "Error 404",
+      "charts": "Gráficos",
+      "lineChart": "Gráfico de Líneas",
+      "barChart": "Gráfico de Barras",
+      "uiElements": "Elementos UI",
+      "alerts": "Alertas",
+      "avatars": "Avatar",
+      "badge": "Insignia",
+      "buttons": "Botones",
+      "images": "Imágenes",
+      "videos": "Videos",
+      "authentication": "Autenticación",
+      "signIn": "Iniciar Sesión",
+      "signUp": "Registrarse"
+    },
+    "badges": {
+      "new": "nuevo",
+      "pro": "pro"
+    },
+    "labels": {
+      "menu": "Menú"
+    }
+  },
+  "sidebarWidget": {
+    "title": "#1 Dashboard Tailwind CSS",
+    "description": "Plantilla líder para administración en Tailwind CSS con más de 400 componentes y páginas.",
+    "button": "Actualizar a Pro"
+  },
+  "profile": {
+    "title": "Perfil",
+    "metadata": {
+      "title": "Perfil Next.js | TailAdmin - Plantilla de Dashboard Next.js",
+      "description": "Esta es la página de Perfil de Next.js para TailAdmin - Plantilla de Dashboard de Administración Next.js Tailwind CSS"
+    },
+    "labels": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo",
+      "phone": "Teléfono",
+      "birthDate": "Fecha de nacimiento",
+      "gender": "Género",
+      "language": "Idioma"
+    },
+    "editModal": {
+      "title": "Editar Información Personal",
+      "subtitle": "Actualiza tus datos para mantener tu perfil al día.",
+      "sectionTitle": "Información Personal",
+      "labels": {
+        "firstName": "Nombre *",
+        "lastName": "Apellido *",
+        "email": "Correo *",
+        "phone": "Teléfono *",
+        "birthDate": "Fecha de Nacimiento",
+        "gender": "Género"
+      },
+      "placeholders": {
+        "gender": "Seleccionar"
+      },
+      "genders": {
+        "male": "Masculino",
+        "female": "Femenino"
+      },
+      "save": "Guardar Cambios",
+      "errors": {
+        "firstNameRequired": "El nombre es obligatorio",
+        "lastNameRequired": "El apellido es obligatorio",
+        "emailRequired": "El correo es obligatorio",
+        "emailInvalid": "Formato de correo inválido",
+        "phoneRequired": "El teléfono es obligatorio",
+        "genderRequired": "El género es obligatorio"
+      }
+    }
+  },
+  "permissions": {
+    "users": {
+      "view": { "name": "Ver usuarios", "description": "Permite ver usuarios" },
+      "create": { "name": "Crear usuarios", "description": "Permite crear usuarios" },
+      "edit": { "name": "Editar usuarios", "description": "Permite editar usuarios" },
+      "delete": { "name": "Eliminar usuarios", "description": "Permite eliminar usuarios" }
+    },
+    "roles": {
+      "view": { "name": "Ver roles", "description": "Permite ver roles" },
+      "create": { "name": "Crear roles", "description": "Permite crear roles" },
+      "edit": { "name": "Editar roles", "description": "Permite editar roles" },
+      "delete": { "name": "Eliminar roles", "description": "Permite eliminar roles" }
+    },
+    "profile": {
+      "view": { "name": "Ver perfil", "description": "Permite ver el perfil" },
+      "edit": { "name": "Editar perfil", "description": "Permite editar el perfil" }
+    },
+    "dashboard": {
+      "view": { "name": "Ver dashboard", "description": "Permite ver el dashboard" }
+    }
+  },
+  "roles": {
+    "admin": { "name": "Administrador", "description": "Acceso total al sistema" },
+    "developer": { "name": "Desarrollador", "description": "Acceso total al sistema" },
+    "user": { "name": "Usuario", "description": "Acceso general al sistema" }
+  },
+  "users": {
+    "title": "Usuarios",
+    "create": "Crear Usuario",
+    "noUsers": "No se encontraron usuarios",
+    "labels": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Correo",
+      "password": "Contraseña",
+      "status": "Estado",
+      "role": "Rol",
+      "actions": "Acciones"
+    },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "disable": "Desactivar",
+      "enable": "Activar"
+    },
+    "table": {
+      "name": "Nombre",
+      "email": "Correo",
+      "role": "Rol",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": { "active": "Activo", "inactive": "Inactivo" }
+  }
+}

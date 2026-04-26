@@ -6,17 +6,15 @@ import { MailService } from "../mail/mail.service";
 export class EmailProcessor extends WorkerHost {
   constructor(private readonly mailService: MailService) {
     super();
-
-    console.log("🔥 WORKER STARTED");
   }
 
-  async process(job: Job<any, any, string>): Promise<any> {
-    console.log("📩 PROCESSING JOB:", job.data);
+  async process(
+    job: Job<{ email: string; token: string }, void, string>,
+  ): Promise<void> {
+    const { email, token } = job.data;
 
     if (job.name === "reset-password") {
-      await this.mailService.sendForgotPassword(job.data.email, job.data.token);
-
-      console.log("✅ EMAIL SENT TO:", job.data.email);
+      await this.mailService.sendForgotPassword(email, token);
     }
   }
 }

@@ -6,6 +6,10 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    /**
+     * Coarse-grained authorization check: validates that the
+     * user identity contains at least one of the required roles.
+     */
     const requiredRoles = this.reflector.get<string[]>(
       "roles",
       context.getHandler(),

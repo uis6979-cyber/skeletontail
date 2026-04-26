@@ -60,8 +60,8 @@ export class UsersService {
     lastName?: string;
     phone?: string;
     birthDate?: Date;
-    gender?: string;
-    language?: string;
+    gender?: "male" | "female";
+    language?: "es" | "en";
     avatarUrl?: string;
   }) {
     const existing = await this.prisma.user.findUnique({
@@ -98,8 +98,8 @@ export class UsersService {
       lastName?: string;
       phone?: string;
       birthDate?: Date;
-      gender?: string;
-      language?: string;
+      gender?: "male" | "female";
+      language?: "es" | "en";
       avatarUrl?: string;
       isActive?: boolean;
     },
@@ -108,7 +108,6 @@ export class UsersService {
 
     let hashedPassword = user.password;
 
-    // Re-hash password only if it is explicitly provided in the update payload
     if (data.password) {
       hashedPassword = await bcrypt.hash(data.password, 10);
     }
@@ -133,7 +132,7 @@ export class UsersService {
   async remove(id: string) {
     await this.findOne(id);
 
-    // Implement soft delete by toggling the isActive flag
+    // Soft-delete implementation to preserve data integrity and referential history
     return this.prisma.user.update({
       where: { id },
       data: {

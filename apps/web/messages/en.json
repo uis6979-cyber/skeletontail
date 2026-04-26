@@ -1,0 +1,292 @@
+{
+  "login": {
+    "title": "Sign In",
+    "labels": {
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "loading": "Signing in...",
+      "invalid": "Invalid credentials.",
+      "description": "Enter your email and password to sign in!",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Keep me logged in",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign Up"
+    },
+    "messages": {
+      "errors": {
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Invalid email format.",
+        "passwordRequired": "Password is required.",
+        "userNotFound": "User not found.",
+        "invalidPassword": "Invalid password.",
+        "unknownError": "An unknown error occurred."
+      },
+      "success": {
+        "loginSuccessful": "Login successful",
+        "logoutSuccessful": "Logged out successfully."
+      }
+    }
+  },
+  "signup": {
+    "title": "Create Account",
+    "labels": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "submit": "Create account",
+      "loading": "Creating...",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "firstNamePlaceholder": "John",
+      "lastNamePlaceholder": "Doe",
+      "emailPlaceholder": "email@example.com",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPasswordPlaceholder": "Confirm your password"
+    },
+    "messages": {
+      "errors": {
+        "passwordsDontMatch": "Passwords do not match",
+        "unknownError": "Unknown error",
+        "emailAlreadyExists": "Email previously registered",
+        "firstNameRequired": "First name is required.",
+        "lastNameRequired": "Last name is required.",
+        "emailRequired": "Email is required.",
+        "emailInvalid": "Invalid email format.",
+        "passwordRequired": "Password is required.",
+        "passwordMinLength": "Password must be at least 6 characters.",
+        "confirmPasswordRequired": "Confirm password is required."
+      },
+      "success": {
+        "accountCreated": "Account created successfully"
+      }
+    }
+  },
+  "common": {
+    "buttons": {
+      "accept": "Accept",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "confirm": "Confirm",
+      "close": "Close",
+      "back": "Back"
+    },
+    "messages": {
+      "success": "Operation completed successfully",
+      "error": "An unexpected error occurred. Please try again",
+      "loading": "Loading...",
+      "unauthorized": "You are not authorized to perform this action",
+      "userNotFound": "User not found.",
+      "noData": "No data available",
+      "apiRunning": "API running 🚀",
+      "languages": {
+        "en": "English",
+        "es": "Spanish"
+      }
+    },
+    "userDropdown": {
+      "userNamePlaceholder": "User Name",
+      "userEmailPlaceholder": "user@example.com",
+      "noEmail": "No email",
+      "avatarAlt": "User avatar",
+      "editProfile": "Edit profile",
+      "accountSettings": "Account settings",
+      "support": "Support",
+      "signOut": "Sign out"
+    }
+  },
+  "resetPassword": {
+    "title": "Recover Password",
+    "titleNew": "Set New Password",
+    "subtitle": "Enter your email and we'll send you a recovery link",
+    "labels": {
+      "email": "Email",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "sendLink": "Send Link",
+      "resetSubmit": "Update Password",
+      "backToLogin": "Back to login"
+    },
+    "messages": {
+      "loading": "Sending...",
+      "loadingUpdate": "Updating...",
+      "success": {
+        "resetEmailSent": "Recovery email queued successfully",
+        "passwordUpdated": "Password updated successfully"
+      },
+      "errors": {
+        "emailRequired": "Email is required",
+        "passwordRequired": "Password is required",
+        "passwordsDontMatch": "Passwords do not match",
+        "invalidToken": "Invalid or expired recovery link",
+        "tokenAlreadyUsed": "This recovery link has already been used.",
+        "tokenExpired": "This recovery link has expired.",
+        "userNotFound": "User not found.",
+        "failedToSendResetEmail": "Failed to send reset email. Please try again later.",
+        "unknownError": "An unexpected error occurred"
+      }
+    }
+  },
+  "header": {
+    "searchPlaceholder": "Search or type command...",
+    "toggleSidebar": "Toggle Sidebar",
+    "toggleHeaderMenu": "Toggle header menu",
+    "logoAlt": "Logo"
+  },
+  "sidebar": {
+    "sections": {
+      "menu": "Menu",
+      "others": "Others"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "ecommerce": "Ecommerce",
+      "calendar": "Calendar",
+      "userProfile": "User Profile",
+      "forms": "Forms",
+      "formElements": "Form Elements",
+      "tables": "Tables",
+      "basicTables": "Basic Tables",
+      "pages": "Pages",
+      "blankPage": "Blank Page",
+      "error404": "404 Error",
+      "charts": "Charts",
+      "lineChart": "Line Chart",
+      "barChart": "Bar Chart",
+      "uiElements": "UI Elements",
+      "alerts": "Alerts",
+      "avatars": "Avatar",
+      "badge": "Badge",
+      "buttons": "Buttons",
+      "images": "Images",
+      "videos": "Videos",
+      "authentication": "Authentication",
+      "signIn": "Sign In",
+      "signUp": "Sign Up"
+    },
+    "badges": {
+      "new": "new",
+      "pro": "pro"
+    },
+    "labels": {
+      "menu": "Menu"
+    }
+  },
+  "sidebarWidget": {
+    "title": "#1 Tailwind CSS Dashboard",
+    "description": "Leading Tailwind CSS Admin Template with 400+ UI Component and Pages.",
+    "button": "Upgrade To Pro"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "metadata": {
+      "title": "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
+      "description": "This is Next.js Home for TailAdmin Dashboard Template"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "metadata": {
+      "title": "Next.js Profile | TailAdmin - Next.js Dashboard Template",
+      "description": "This is Next.js Profile page for TailAdmin - Next.js Tailwind CSS Admin Dashboard Template"
+    },
+    "labels": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "birthDate": "Birth Date",
+      "gender": "Gender",
+      "language": "Language"
+    },
+    "editModal": {
+      "title": "Edit Personal Information",
+      "subtitle": "Update your details to keep your profile up-to-date.",
+      "sectionTitle": "Personal Information",
+      "labels": {
+        "firstName": "First Name *",
+        "lastName": "Last Name *",
+        "email": "Email *",
+        "phone": "Phone *",
+        "birthDate": "Birth Date",
+        "gender": "Gender"
+      },
+      "placeholders": {
+        "gender": "Select"
+      },
+      "genders": {
+        "male": "Male",
+        "female": "Female"
+      },
+      "save": "Save Changes",
+      "errors": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired": "Last name is required",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Invalid email format",
+        "phoneRequired": "Phone is required",
+        "genderRequired": "Gender is required"
+      }
+    }
+  },
+  "permissions": {
+    "users": {
+      "view": { "name": "View users", "description": "Allows viewing users" },
+      "create": { "name": "Create users", "description": "Allows creating users" },
+      "edit": { "name": "Edit users", "description": "Allows editing users" },
+      "delete": { "name": "Delete users", "description": "Allows deleting users" }
+    },
+    "roles": {
+      "view": { "name": "View roles", "description": "Allows viewing roles" },
+      "create": { "name": "Create roles", "description": "Allows creating roles" },
+      "edit": { "name": "Edit roles", "description": "Allows editing roles" },
+      "delete": { "name": "Delete roles", "description": "Allows deleting roles" }
+    },
+    "profile": {
+      "view": { "name": "View profile", "description": "Allows viewing profile" },
+      "edit": { "name": "Edit profile", "description": "Allows editing profile" }
+    },
+    "dashboard": {
+      "view": { "name": "View dashboard", "description": "Allows viewing dashboard" }
+    }
+  },
+  "roles": {
+    "admin": { "name": "Administrator", "description": "Full system access" },
+    "developer": { "name": "Developer", "description": "Full system access" },
+    "user": { "name": "User", "description": "General system access" }
+  },
+  "users": {
+    "title": "Users",
+    "create": "Create User",
+    "noUsers": "No users found",
+    "labels": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "password": "Password",
+      "status": "Status",
+      "role": "Role",
+      "actions": "Actions"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "disable": "Disable",
+      "enable": "Enable"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": { "active": "Active", "inactive": "Inactive" }
+  }
+}

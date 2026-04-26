@@ -29,7 +29,10 @@ export class AuthController {
     const user = await this.authService.login(dto);
     const token = await this.authService.generateToken(user);
 
-    // Set JWT in HTTP-only cookie to prevent client-side script access (XSS mitigation)
+    /**
+     * Store JWT in HttpOnly cookie to mitigate XSS risks.
+     * Production environments enforce the 'secure' flag for HTTPS-only transmission.
+     */
     res.cookie("access_token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -5,6 +5,7 @@ import "dotenv/config";
 const prisma = new PrismaClient();
 
 async function main() {
+  // Define system permissions using translation keys for localization
   const permissions = [
     {
       name: "permissions.users.view.name",
@@ -85,6 +86,7 @@ async function main() {
     },
   ];
 
+  // Define system roles using translation keys
   const roles = [
     {
       name: "roles.admin.name",
@@ -106,19 +108,40 @@ async function main() {
   const createdPermissions: Permission[] = [];
 
   for (const permission of permissions) {
+    // Ensure all defined permissions exist and are up to date
     const record = await prisma.permission.upsert({
       where: { slug: permission.slug },
       update: {
         name: permission.name,
         description: permission.description,
+        module: permission.module,
+        action: permission.action,
       },
       create: permission,
     });
+
     createdPermissions.push(record);
   }
 
-  // Upsert roles and link them with all defined system permissions
+  const allPermissionSlugs = createdPermissions.map((p) => p.slug);
+  const userPermissionSlugs = [
+    "dashboard.view",
+    "profile.view",
+    "profile.edit",
+  ];
+
   for (const role of roles) {
+    let assignedSlugs: string[] = [];
+
+    assignedSlugs =
+      role.slug === "admin" || role.slug === "developer"
+        ? allPermissionSlugs
+        : userPermissionSlugs;
+
+    if (role.slug === "user") {
+      assignedSlugs = userPermissionSlugs;
+    }
+
     await prisma.role.upsert({
       where: { slug: role.slug },
       update: {
@@ -128,9 +151,9 @@ async function main() {
       create: {
         ...role,
         permissions: {
-          create: createdPermissions.map((permission) => ({
+          create: assignedSlugs.map((slug) => ({
             permission: {
-              connect: { slug: permission.slug },
+              connect: { slug },
             },
           })),
         },
@@ -138,8 +161,8 @@ async function main() {
     });
   }
 
+  // Seed initial administrative and system users
   const defaultPassword = await bcrypt.hash("12345678", 10);
-
   const users = [
     {
       email: "admin@example.com",
@@ -186,12 +209,12 @@ async function main() {
     });
   }
 
-  console.log("Seeding complete.");
+  console.log("Seeding completed successfully.");
 }
 
 main()
   .catch((error) => {
-    console.error("Critical seeding failure:", error);
+    console.error("Seed execution failed:", error);
     process.exit(1);
   })
   .finally(async () => {

@@ -7,6 +7,10 @@ export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
+    /**
+     * Granular authorization check: verifies required permissions
+     * defined via metadata against the user's JWT payload.
+     */
     const requiredPermissions = this.reflector.get<string[]>(
       "permissions",
       context.getHandler(),

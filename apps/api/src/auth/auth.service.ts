@@ -42,6 +42,9 @@ export class AuthService {
     return {
       id: user.id,
       email: user.email,
+      firstName: user.firstName ?? undefined,
+      lastName: user.lastName ?? undefined,
+      avatarUrl: user.avatarUrl ?? undefined,
     };
   }
 
@@ -102,7 +105,6 @@ export class AuthService {
 
       const token = randomUUID();
 
-      // Recovery tokens default to a 15-minute expiration window
       await this.prisma.passwordResetToken.create({
         data: {
           token,
@@ -177,7 +179,7 @@ export class AuthService {
 
     const hashed = await bcrypt.hash(dto.password, 10);
 
-    // Perform atomic update to ensure user password change and token invalidation are synchronized
+    // Ensure password reset and token invalidation occur as a single atomic unit
     await this.prisma.$transaction([
       this.prisma.user.update({
         where: { id: record.userId },
@@ -192,7 +194,13 @@ export class AuthService {
     return { message: "resetPassword.messages.success.passwordUpdated" };
   }
 
-  async generateToken(user: { id: string; email: string }): Promise<string> {
+  async generateToken(user: {
+    id: string;
+    email: string;
+    firstName?: string;
+    lastName?: string;
+    avatarUrl?: string;
+  }): Promise<string> {
     const userRoles = await this.prisma.userRole.findMany({
       where: { userId: user.id },
       include: {
@@ -211,12 +219,14 @@ export class AuthService {
     const roles = userRoles.map((r) => r.role.slug);
 
     const permissions = userRoles.flatMap((r) =>
-      r.role.permissions.map((p) => p.permission.slug),
+      r.role.permissions.map((p) => p.permission.module),
     );
-
     return this.jwtService.sign({
       sub: user.id,
       email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatarUrl,
       roles,
       permissions,
     });
