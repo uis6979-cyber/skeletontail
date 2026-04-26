@@ -1,7 +1,6 @@
 "use client";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslations } from "next-intl";
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
@@ -50,6 +49,10 @@ export default function UserDropdown() {
         if (!res.ok) throw new Error("Not authenticated");
 
         const data = await res.json();
+        // Ensure avatar URL is absolute if provided as a relative path from the API
+        if (data.avatarUrl && !data.avatarUrl.startsWith("http")) {
+          data.avatarUrl = `${process.env.NEXT_PUBLIC_API_URL}${data.avatarUrl}`;
+        }
         setUser(data);
       } catch (error) {
         setUser(null);
@@ -66,10 +69,9 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dark:text-gray-400 dropdown-toggle"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <Image
-            width={44}
-            height={44}
+          <img
             src={user?.avatarUrl || "/images/user/owner.jpg"}
+            className="w-11 h-11 rounded-full"
             alt={t("avatarAlt")}
           />
         </span>

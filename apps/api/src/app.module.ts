@@ -5,6 +5,7 @@ import { AuthModule } from "./auth/auth.module";
 import { EmailModule } from "./common/email/email.module";
 import { MailModule } from "./common/mail/mail.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { ProfileModule } from "./profile/profile.module";
 import { UsersModule } from "./users/users.module";
 /**
  * Root application module.
@@ -25,6 +26,7 @@ import { UsersModule } from "./users/users.module";
     PrismaModule,
     EmailModule,
     MailModule,
+    ProfileModule,
   ],
 })
 export class AppModule {}

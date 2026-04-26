@@ -233,6 +233,16 @@
         "phoneRequired": "El teléfono es obligatorio",
         "genderRequired": "El género es obligatorio"
       }
+    },
+    "userMeta": {
+      "changeAvatar": "Cambiar",
+      "updatePhoto": "Actualizar foto"
+    },
+    "messages": {
+      "errors": {
+        "fetchFailed": "Error al obtener el perfil.",
+        "updateAvatarFailed": "Error al actualizar el avatar."
+      }
     }
   },
   "permissions": {

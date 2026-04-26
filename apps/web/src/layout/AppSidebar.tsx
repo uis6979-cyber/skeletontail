@@ -34,6 +34,15 @@ const navItems: NavItem[] = [
     path: "/users",
     module: "users",
   }
+  // TODO: Example don't remove
+  // {
+  //   name: "sidebar.items.pages",
+  //   icon: <PageIcon />,
+  //   subItems: [
+  //     { name: "sidebar.items.blankPage", path: "/blank", pro: false },
+  //     { name: "sidebar.items.error404", path: "/error-404", pro: false },
+  //   ],
+  // },
 ];
 
 const AppSidebar: React.FC = () => {

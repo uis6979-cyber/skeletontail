@@ -2,6 +2,7 @@ import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
+import { join } from "path";
 import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
@@ -15,10 +16,16 @@ import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
-  // Standardize error payloads across the application
+  // Global filter for i18n-standardized error responses
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  // Enable CORS for frontend integration
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      transform: true,
+    }),
+  );
+
   app.enableCors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000",
     credentials: true,
@@ -26,14 +33,7 @@ async function bootstrap() {
 
   // Enable cookie parsing for secure session management
   app.use(cookieParser());
-
-  // Enforce data integrity through DTO validation
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true, // Strips non-decorated properties
-      transform: true, // Automatically transforms payloads to DTO instances
-    }),
-  );
+  app.useStaticAssets(join(process.cwd(), "public"));
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
