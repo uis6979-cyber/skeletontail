@@ -1,7 +1,9 @@
 "use client";
 
+import { getProfile, updateProfile } from "@/lib/api/profile";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import Button from "../ui/button/Button";
@@ -24,31 +26,28 @@ type Errors = Partial<Record<keyof User, string>>;
 type Props = {
     isOpen: boolean;
     onClose: () => void;
+    onUpdated?: () => void;
 };
 
-export default function UserProfileModal({ isOpen, onClose }: Props) {
+export default function UserProfileModal({ isOpen, onClose, onUpdated }: Props) {
     const t = useTranslations("profile.editModal");
     const tc = useTranslations("common");
+
     const [user, setUser] = useState<User | null>(null);
     const [errors, setErrors] = useState<Errors>({});
 
     /**
-     * Fetches fresh user data whenever the modal is opened
+     * Synchronize local state with fresh profile data whenever modal opens
      */
     useEffect(() => {
         if (!isOpen) return;
 
         const fetchUser = async () => {
             try {
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
-                    { credentials: "include" }
-                );
-
-                const data = await res.json();
+                const data = await getProfile();
                 setUser(data);
             } catch (error) {
-                console.error("Error fetching user:", error);
+                console.error("Profile fetch error:", error);
             }
         };
 
@@ -57,7 +56,7 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
 
     const handleChange = (field: keyof User, value: string) => {
         setUser((prev) => ({
-            ...prev!,
+            ...(prev || ({} as User)),
             [field]: value,
         }));
 
@@ -73,39 +72,57 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
         const newErrors: Errors = {};
 
         if (!user.firstName?.trim()) {
-            newErrors.firstName = "errors.firstNameRequired";
+            newErrors.firstName = "messages.errors.firstNameRequired";
         }
-
         if (!user.lastName?.trim()) {
-            newErrors.lastName = "errors.lastNameRequired";
+            newErrors.lastName = "messages.errors.lastNameRequired";
         }
-
         if (!user.email?.trim()) {
-            newErrors.email = "errors.emailRequired";
+            newErrors.email = "messages.errors.emailRequired";
         } else if (!/^\S+@\S+\.\S+$/.test(user.email)) {
-            newErrors.email = "errors.emailInvalid";
+            newErrors.email = "messages.errors.emailInvalid";
         }
-
         if (!user.phone?.trim()) {
-            newErrors.phone = "errors.phoneRequired";
+            newErrors.phone = "messages.errors.phoneRequired";
         }
-
         if (!user.gender) {
-            newErrors.gender = "errors.genderRequired";
+            newErrors.gender = "messages.errors.genderRequired";
         }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
+    /**
+     * Persists profile changes and notifies parent components of state updates
+     */
     const handleSave = async () => {
         if (!validate()) return;
 
         try {
-            // TODO: Implement update service call
+            if (!user) return;
+
+            await updateProfile({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                phone: user.phone,
+                birthDate: user.birthDate,
+                gender: user.gender,
+                language: user.language,
+            });
+
+            toast.success(t("messages.success.profileUpdated"));
+
+            await onUpdated?.();
             onClose();
-        } catch (error) {
-            console.error("Error saving user:", error);
+        } catch (err: any) {
+            const rawMessage =
+                err?.response?.data?.message ||
+                err?.message ||
+                "messages.errors.unknownError";
+
+            const message = rawMessage.includes(".") ? t(rawMessage as any) : rawMessage;
+            toast.error(message);
         }
     };
 
@@ -140,9 +157,7 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
                                     <Input
                                         type="text"
                                         defaultValue={user?.firstName || ""}
-                                        onChange={(e) =>
-                                            handleChange("firstName", e.target.value)
-                                        }
+                                        onChange={(e) => handleChange("firstName", e.target.value)}
                                     />
                                     {errors.firstName && (
                                         <p className="text-xs text-red-500">{t(errors.firstName as any)}</p>
@@ -154,9 +169,7 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
                                     <Input
                                         type="text"
                                         defaultValue={user?.lastName || ""}
-                                        onChange={(e) =>
-                                            handleChange("lastName", e.target.value)
-                                        }
+                                        onChange={(e) => handleChange("lastName", e.target.value)}
                                     />
                                     {errors.lastName && (
                                         <p className="text-xs text-red-500">{t(errors.lastName as any)}</p>
@@ -165,14 +178,7 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
 
                                 <div>
                                     <Label>{t("labels.email")}</Label>
-                                    <Input
-                                        type="text"
-                                        defaultValue={user?.email || ""}
-                                        disabled
-                                    />
-                                    {errors.email && (
-                                        <p className="text-xs text-red-500">{t(errors.email as any)}</p>
-                                    )}
+                                    <Input type="text" defaultValue={user?.email || ""} disabled />
                                 </div>
 
                                 <div>
@@ -180,9 +186,7 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
                                     <Input
                                         type="text"
                                         defaultValue={user?.phone || ""}
-                                        onChange={(e) =>
-                                            handleChange("phone", e.target.value)
-                                        }
+                                        onChange={(e) => handleChange("phone", e.target.value)}
                                     />
                                     {errors.phone && (
                                         <p className="text-xs text-red-500">{t(errors.phone as any)}</p>
@@ -193,14 +197,8 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
                                     <Label>{t("labels.birthDate")}</Label>
                                     <Input
                                         type="date"
-                                        defaultValue={
-                                            user?.birthDate
-                                                ? user.birthDate.split("T")[0]
-                                                : ""
-                                        }
-                                        onChange={(e) =>
-                                            handleChange("birthDate", e.target.value)
-                                        }
+                                        defaultValue={user?.birthDate ? user.birthDate.split("T")[0] : ""}
+                                        onChange={(e) => handleChange("birthDate", e.target.value)}
                                     />
                                 </div>
 
@@ -209,14 +207,13 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
                                     <select
                                         className="w-full rounded-lg border px-3 py-2 dark:bg-gray-800"
                                         value={user?.gender || ""}
-                                        onChange={(e) =>
-                                            handleChange("gender", e.target.value)
-                                        }
+                                        onChange={(e) => handleChange("gender", e.target.value)}
                                     >
                                         <option value="">{t("placeholders.gender")}</option>
                                         <option value="male">{t("genders.male")}</option>
                                         <option value="female">{t("genders.female")}</option>
                                     </select>
+
                                     {errors.gender && (
                                         <p className="text-xs text-red-500">{t(errors.gender as any)}</p>
                                     )}
@@ -229,8 +226,9 @@ export default function UserProfileModal({ isOpen, onClose }: Props) {
                         <Button size="sm" variant="outline" type="button" onClick={onClose}>
                             {tc("buttons.close")}
                         </Button>
+
                         <Button size="sm" type="submit">
-                            {t("save")}
+                            {tc("buttons.save")}
                         </Button>
                     </div>
                 </form>

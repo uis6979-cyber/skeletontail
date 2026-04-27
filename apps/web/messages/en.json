@@ -51,7 +51,7 @@
       "errors": {
         "passwordsDontMatch": "Passwords do not match",
         "unknownError": "Unknown error",
-        "emailAlreadyExists": "Email previously registered",
+        "emailAlreadyExists": "Email is already registered.",
         "firstNameRequired": "First name is required.",
         "lastNameRequired": "Last name is required.",
         "emailRequired": "Email is required.",
@@ -84,11 +84,28 @@
       "userNotFound": "User not found.",
       "noData": "No data available",
       "apiRunning": "API running 🚀",
-      "languages": {
-        "en": "English",
-        "es": "Spanish"
-      }
+      "confirmTitle": "Confirm Action",
+      "confirmBody": "Are you sure you want to proceed?"
     },
+    "table": {
+      "searchPlaceholder": "Search...",
+      "export": "Export",
+      "statusAll": "All",
+      "show": "Show",
+      "entries": "Entries",
+      "defaultFilename": "table"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Spanish"
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "disable": "Disable",
+      "enable": "Enable"
+    },
+    "status": { "active": "Active", "inactive": "Inactive" },
     "userDropdown": {
       "userNamePlaceholder": "User Name",
       "userEmailPlaceholder": "user@example.com",
@@ -146,6 +163,7 @@
     "items": {
       "dashboard": "Dashboard",
       "users": "Users",
+      "roles": "Roles",
       "ecommerce": "Ecommerce",
       "calendar": "Calendar",
       "userProfile": "User Profile",
@@ -224,14 +242,18 @@
         "male": "Male",
         "female": "Female"
       },
-      "save": "Save Changes",
-      "errors": {
-        "firstNameRequired": "First name is required",
-        "lastNameRequired": "Last name is required",
-        "emailRequired": "Email is required",
-        "emailInvalid": "Invalid email format",
-        "phoneRequired": "Phone is required",
-        "genderRequired": "Gender is required"
+      "messages": {
+        "errors": {
+          "firstNameRequired": "First name is required",
+          "lastNameRequired": "Last name is required",
+          "emailRequired": "Email is required",
+          "emailInvalid": "Invalid email format",
+          "phoneRequired": "Phone is required",
+          "genderRequired": "Gender is required"
+        },
+        "success": {
+          "profileUpdated": "Profile updated successfully"
+        }
       }
     },
     "userMeta": {
@@ -241,7 +263,9 @@
     "messages": {
       "errors": {
         "fetchFailed": "Failed to fetch profile.",
-        "updateAvatarFailed": "Failed to update avatar."
+        "updateAvatarFailed": "Failed to update avatar.",
+        "updateProfileFailed": "Failed to update profile.",
+        "noFileReceived": "No file received."
       }
     }
   },
@@ -267,9 +291,62 @@
     }
   },
   "roles": {
+    "title": "Roles",
     "admin": { "name": "Administrator", "description": "Full system access" },
     "developer": { "name": "Developer", "description": "Full system access" },
-    "user": { "name": "User", "description": "General system access" }
+    "user": { "name": "User", "description": "General system access" },
+    "labels": {
+      "name": "Role",
+      "slug": "Slug",
+      "description": "Description",
+      "status": "Status",
+      "actions": "Actions",
+      "create": "Create Role",
+      "edit": "Edit Role"
+    },
+    "form": {
+      "editTitle": "Edit Role",
+      "createTitle": "Create Role",
+      "slugLabel": "Slug",
+      "slugPlaceholder": "Enter role slug",
+      "nameLabel": "Role Name",
+      "namePlaceholder": "Enter role name",
+      "descriptionLabel": "Description",
+      "descriptionPlaceholder": "Enter role description",
+      "permissionsLabel": "Permissions",
+      "deselectAll": "Deselect all",
+      "selectAll": "Select all",
+      "deselectModule": "Deselect module",
+      "selectModule": "Select module"
+    },
+    "messages": {
+      "enable":"Active",
+      "disable":"Inactive",
+      "validations": {
+        "nameRequired": "Role name is required",
+        "slugRequired": "Slug is required",
+        "descriptionRequired": "Description is required"
+      },
+      "errors": {
+        "loadFailed": "Failed to load role details",
+        "fetchFailed": "Failed to fetch roles",
+        "toggleFailed": "Failed to toggle role status",
+        "updateFailed": "Failed to update role",
+        "createFailed": "Failed to create role",
+        "roleHasActiveUsers": "Cannot disable role because it has active users",
+        "fetchPermissionsFailed": "Failed to fetch permissions"
+      },
+      "success": {
+        "statusChange": "Role status updated successfully",
+        "updateSuccess": "Role updated successfully",
+        "createSuccess": "Role created successfully"
+      },
+      "confirm":{
+        "disable": "Are you sure you want to disable this role?",
+        "enable": "Are you sure you want to enable this role?",
+        "toggleTitle": "Update Role Status"
+      }
+    }
   },
   "users": {
     "title": "Users",
@@ -284,19 +361,12 @@
       "role": "Role",
       "actions": "Actions"
     },
-    "actions": {
-      "edit": "Edit",
-      "delete": "Delete",
-      "disable": "Disable",
-      "enable": "Enable"
-    },
     "table": {
       "name": "Name",
       "email": "Email",
       "role": "Role",
       "status": "Status",
       "actions": "Actions"
-    },
-    "status": { "active": "Active", "inactive": "Inactive" }
+    }
   }
 }

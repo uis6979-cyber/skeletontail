@@ -1,3 +1,4 @@
+import { ConfirmProvider } from "@/components/common/ConfirmDialog";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { NextIntlClientProvider } from "next-intl";
@@ -42,32 +43,35 @@ export default async function LocaleLayout({ children, params }) {
           <ThemeProvider>
             {/* Provides sidebar state management */}
             <SidebarProvider>
-              {children}
+              <ConfirmProvider>
+                {children}
 
-              {/* Global notification system for user feedback */}
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 3000,
-                  style: {
-                    borderRadius: "10px",
-                    padding: "12px 14px",
-                    fontSize: "14px",
-                  },
-                  success: {
+                {/* Global notification system for user feedback */}
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 3000,
                     style: {
-                      background: "#16a34a",
-                      color: "white",
+                      borderRadius: "10px",
+                      padding: "12px 14px",
+                      fontSize: "14px",
                     },
-                  },
-                  error: {
-                    style: {
-                      background: "#dc2626",
-                      color: "white",
+                    success: {
+                      style: {
+                        background: "#16a34a",
+                        color: "white",
+                      },
                     },
-                  },
-                }}
-              />
+                    error: {
+                      style: {
+                        background: "#dc2626",
+                        color: "white",
+                      },
+                    },
+                  }}
+                />
+              </ConfirmProvider>
+
             </SidebarProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

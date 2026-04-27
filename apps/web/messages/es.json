@@ -11,7 +11,7 @@
       "passwordPlaceholder": "Introduce tu contraseña",
       "rememberMe": "Mantener sesión iniciada",
       "forgotPassword": "¿Has olvidado la contraseña?",
-      "noAccount": "¿No tienes una cuenta?",
+      "noAccount": "¿No tienes cuenta?",
       "signUp": "Registrarse"
     },
     "messages": {
@@ -74,7 +74,7 @@
       "newPassword": "Nueva contraseña",
       "confirmPassword": "Confirmar contraseña",
       "sendLink": "Enviar enlace",
-      "resetSubmit": "Actualizar contraseña",
+      "resetSubmit": "Restablecer contraseña",
       "backToLogin": "Volver al inicio de sesión"
     },
     "messages": {
@@ -108,6 +108,18 @@
       "close": "Cerrar",
       "back": "Volver"
     },
+    "table": {
+      "searchPlaceholder": "Buscar...",
+      "export": "Exportar",
+      "show": "Mostrar",
+      "entries": "Entradas",
+      "statusAll": "Todos",
+      "defaultFilename": "tabla"
+    },
+    "languages": {
+      "en": "Inglés",
+      "es": "Español"
+    },
     "messages": {
       "success": "Operación completada con éxito",
       "error": "Ha ocurrido un error inesperado. Inténtalo de nuevo",
@@ -116,11 +128,20 @@
       "userNotFound": "Usuario no encontrado.",
       "noData": "No hay datos disponibles",
       "apiRunning": "API en ejecución 🚀",
-      "languages": {
-        "en": "Inglés",
-        "es": "Español"
-      }
+      "confirmTitle": "Confirmar Acción",
+      "confirmBody": "¿Estás seguro de que deseas continuar?"
     },
+    "actions": {
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "disable": "Desactivar",
+      "enable": "Activar"
+    },
+    "status": { 
+      "active": "Activo", 
+      "inactive": "Inactivo",
+      "statusAll": "Todos"
+     },
     "userDropdown": {
       "userNamePlaceholder": "Nombre de Usuario",
       "userEmailPlaceholder": "usuario@ejemplo.com",
@@ -153,6 +174,7 @@
     "items": {
       "dashboard": "Dashboard",
       "users": "Usuarios",
+      "roles": "Roles",
       "ecommerce": "Ecommerce",
       "calendar": "Calendario",
       "userProfile": "Perfil de Usuario",
@@ -224,14 +246,18 @@
         "male": "Masculino",
         "female": "Femenino"
       },
-      "save": "Guardar Cambios",
-      "errors": {
-        "firstNameRequired": "El nombre es obligatorio",
-        "lastNameRequired": "El apellido es obligatorio",
-        "emailRequired": "El correo es obligatorio",
-        "emailInvalid": "Formato de correo inválido",
-        "phoneRequired": "El teléfono es obligatorio",
-        "genderRequired": "El género es obligatorio"
+      "messages": {
+        "errors": {
+          "firstNameRequired": "El nombre es obligatorio",
+          "lastNameRequired": "El apellido es obligatorio",
+          "emailRequired": "El correo es obligatorio",
+          "emailInvalid": "Formato de correo inválido",
+          "phoneRequired": "El teléfono es obligatorio",
+          "genderRequired": "El género es obligatorio"
+        },
+        "success": {
+          "profileUpdated": "Perfil actualizado correctamente"
+        }
       }
     },
     "userMeta": {
@@ -241,7 +267,9 @@
     "messages": {
       "errors": {
         "fetchFailed": "Error al obtener el perfil.",
-        "updateAvatarFailed": "Error al actualizar el avatar."
+        "updateAvatarFailed": "Error al actualizar el avatar.",
+        "updateProfileFailed": "Error al actualizar el perfil.",
+        "noFileReceived": "No se recibió ningún archivo."
       }
     }
   },
@@ -267,9 +295,62 @@
     }
   },
   "roles": {
+    "title": "Roles",
     "admin": { "name": "Administrador", "description": "Acceso total al sistema" },
     "developer": { "name": "Desarrollador", "description": "Acceso total al sistema" },
-    "user": { "name": "Usuario", "description": "Acceso general al sistema" }
+    "user": { "name": "Usuario", "description": "Acceso general al sistema" },
+    "labels": {
+      "name": "Rol",
+      "slug": "Slug",
+      "description": "Descripción",
+      "status": "Estado",
+      "actions": "Acciones",
+      "create": "Crear Rol",
+      "edit": "Editar Rol"
+    },
+    "form": {
+      "editTitle": "Editar Rol",
+      "createTitle": "Crear Rol",
+      "nameLabel": "Nombre del Rol",
+      "slugLabel": "Slug",
+      "slugPlaceholder": "Ingrese el slug del rol",
+      "namePlaceholder": "Ingrese el nombre del rol",
+      "descriptionLabel": "Descripción",
+      "descriptionPlaceholder": "Ingrese la descripción del rol",
+      "permissionsLabel": "Permisos",
+      "deselectAll": "Quitar todos",
+      "selectAll": "Seleccionar todo",
+      "deselectModule": "Quitar módulo",
+      "selectModule": "Seleccionar módulo"
+    },
+    "messages": {
+      "enable":"Activo",
+      "disable":"Inactivo",
+      "validations": {
+        "nameRequired": "El nombre del rol es obligatorio",
+        "slugRequired": "El slug es obligatorio",
+        "descriptionRequired": "La descripción es obligatoria"
+      },
+      "errors": {
+        "loadFailed": "Error al cargar los detalles del rol",
+        "fetchFailed": "Error al obtener los roles",
+        "toggleFailed": "Error al cambiar el estado del rol",
+        "updateFailed": "Error al actualizar el rol",
+        "createFailed": "Error al crear el rol",
+        "roleHasActiveUsers": "No se puede desactivar el rol porque tiene usuarios activos",
+        "fetchPermissionsFailed": "Error al obtener los permisos"
+      },
+      "success": {
+        "statusChange": "Estado del rol actualizado correctamente",
+        "updateSuccess": "Rol actualizado correctamente",
+        "createSuccess": "Rol creado correctamente"
+      },
+      "confirm":{
+        "toggleTitle": "Cambiar estado del rol",
+        "disable": "¿Estás seguro de que deseas desactivar este rol?",
+        "enable": "¿Estás seguro de que deseas activar este rol?"
+      }
+    }
   },
   "users": {
     "title": "Usuarios",
@@ -284,19 +365,12 @@
       "role": "Rol",
       "actions": "Acciones"
     },
-    "actions": {
-      "edit": "Editar",
-      "delete": "Eliminar",
-      "disable": "Desactivar",
-      "enable": "Activar"
-    },
     "table": {
       "name": "Nombre",
       "email": "Correo",
       "role": "Rol",
       "status": "Estado",
       "actions": "Acciones"
-    },
-    "status": { "active": "Activo", "inactive": "Inactivo" }
+    }
   }
 }

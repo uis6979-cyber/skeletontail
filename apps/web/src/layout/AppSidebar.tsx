@@ -30,10 +30,16 @@ const navItems: NavItem[] = [
   },
   {
     icon: <UserIcon />,
+    name: "sidebar.items.roles",
+    path: "/roles",
+    module: "roles",
+  },
+  {
+    icon: <UserIcon />,
     name: "sidebar.items.users",
     path: "/users",
     module: "users",
-  }
+  },
   // TODO: Example don't remove
   // {
   //   name: "sidebar.items.pages",

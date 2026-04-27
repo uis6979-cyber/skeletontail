@@ -1,8 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-/**
- * Retrieves the user profile and normalizes the avatar URL.
- */
 export async function getProfile() {
   const res = await fetch(`${API_URL}/profile`, {
     credentials: "include",
@@ -13,7 +10,8 @@ export async function getProfile() {
   }
 
   const data = await res.json();
-  
+
+  // Ensure absolute URL for relative asset paths returned by the API
   if (data.avatarUrl && !data.avatarUrl.startsWith("http")) {
     data.avatarUrl = `${API_URL}${data.avatarUrl}`;
   }
@@ -22,13 +20,9 @@ export async function getProfile() {
 }
 
 /**
- * Updates the user avatar. 
- * Manual headers are omitted to allow the browser to correctly set the multipart boundary.
+ * Note: Boundary headers for multipart/form-data are handled automatically by the browser.
  */
-export async function updateAvatar(file: File) {
-  const formData = new FormData();
-  formData.append("file", file);
-
+export async function updateAvatar(formData: FormData) {
   const res = await fetch(`${API_URL}/profile/avatar`, {
     method: "PATCH",
     credentials: "include",
@@ -37,6 +31,23 @@ export async function updateAvatar(file: File) {
 
   if (!res.ok) {
     throw new Error("profile.messages.errors.updateAvatarFailed");
+  }
+
+  return res.json();
+}
+
+export async function updateProfile(data: Record<string, any>) {
+  const res = await fetch(`${API_URL}/profile`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    throw new Error("profile.messages.errors.updateProfileFailed");
   }
 
   return res.json();

@@ -1,4 +1,4 @@
-import { ValidationPipe } from "@nestjs/common";
+import { BadRequestException, ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
@@ -23,6 +23,15 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
+      forbidNonWhitelisted: true,
+      exceptionFactory: (errors) => {
+        return new BadRequestException(
+          errors.map((err) => ({
+            field: err.property,
+            message: Object.values(err.constraints ?? {})[0],
+          })),
+        );
+      },
     }),
   );
 

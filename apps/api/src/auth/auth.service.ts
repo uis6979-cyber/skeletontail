@@ -16,6 +16,8 @@ import { UsersService } from "../users/users.service";
 import { LoginDto } from "./dto/login.dto";
 import { RegisterDto } from "./dto/register.dto";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -105,6 +107,7 @@ export class AuthService {
 
       const token = randomUUID();
 
+      // Recovery tokens are configured with a 15-minute expiration window
       await this.prisma.passwordResetToken.create({
         data: {
           token,
@@ -179,7 +182,7 @@ export class AuthService {
 
     const hashed = await bcrypt.hash(dto.password, 10);
 
-    // Ensure password reset and token invalidation occur as a single atomic unit
+    // Atomically update user credentials and invalidate the recovery token to ensure consistency
     await this.prisma.$transaction([
       this.prisma.user.update({
         where: { id: record.userId },
@@ -230,5 +233,58 @@ export class AuthService {
       roles,
       permissions,
     });
+  }
+
+  async getMe(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        roles: {
+          include: {
+            role: {
+              include: {
+                permissions: {
+                  include: {
+                    permission: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException("common.messages.userNotFound");
+    }
+
+    const roles = user.roles.map((r) => r.role.slug);
+
+    const permissions = user.roles.flatMap((r) =>
+      r.role.permissions.map((p) => p.permission.module),
+    );
+
+    if (user.avatarUrl) {
+      user.avatarUrl = user.avatarUrl.startsWith("http")
+        ? user.avatarUrl
+        : `${API_URL}${user.avatarUrl}`;
+    }
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      avatarUrl: user.avatarUrl,
+
+      phone: user.phone,
+      birthDate: user.birthDate,
+      gender: user.gender,
+      language: user.language,
+
+      roles,
+      permissions,
+    };
   }
 }

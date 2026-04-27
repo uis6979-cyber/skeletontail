@@ -1,4 +1,6 @@
 import {
+  BadRequestException,
+  Body,
   Controller,
   Get,
   Patch,
@@ -10,6 +12,7 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import { JwtPayload } from "../auth/jwt-payload.interface";
 import { JwtAuthGuard } from "../common/guards/jwt-auth.guard";
+import type { UpdateProfileData } from "./profile.service";
 import { ProfileService } from "./profile.service";
 import { avatarStorage } from "./storage";
 
@@ -19,13 +22,12 @@ export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @Get()
-  getProfile(@Req() req: { user: JwtPayload }) {
+  async getProfile(@Req() req: { user: JwtPayload }) {
     return this.profileService.getProfile(req.user.sub);
   }
 
   /**
-   * Updates the user's avatar.
-   * File size is restricted to 2MB.
+   * Handles user avatar updates with a 2MB limit and local disk persistence.
    */
   @Patch("avatar")
   @UseInterceptors(
@@ -34,10 +36,22 @@ export class ProfileController {
       limits: { fileSize: 2 * 1024 * 1024 },
     }),
   )
-  updateAvatar(
+  async updateAvatar(
     @Req() req: { user: JwtPayload },
     @UploadedFile() file: Express.Multer.File,
   ) {
+    if (!file) {
+      throw new BadRequestException("profile.messages.errors.noFileReceived");
+    }
+
     return this.profileService.updateAvatar(req.user.sub, file);
+  }
+
+  @Patch()
+  async updateProfile(
+    @Req() req: { user: JwtPayload },
+    @Body() body: UpdateProfileData,
+  ) {
+    return this.profileService.updateProfile(req.user.sub, body);
   }
 }

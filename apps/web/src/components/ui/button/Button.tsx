@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "sm" | "md";
-  variant?: "primary" | "outline";
+  variant?: "primary" | "outline" | "danger" | "success";
   startIcon?: ReactNode;
   endIcon?: ReactNode;
 };

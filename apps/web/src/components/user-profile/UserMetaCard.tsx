@@ -1,8 +1,9 @@
 "use client";
 
-import { getProfile, updateAvatar } from "@/lib/api/profile";
+import { updateAvatar } from "@/lib/api/profile";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
+import toast from "react-hot-toast";
 
 type User = {
   id: string;
@@ -13,42 +14,40 @@ type User = {
 };
 
 type Props = {
+  user: User | null;
   onEdit: () => void;
+  /** Callback to refresh user data in the parent component after updates */
+  onUpdated?: () => void;
 };
 
-export default function UserMetaCard({ onEdit }: Props) {
+/**
+ * Identity header card displaying user avatar, name, and email.
+ * Handles local avatar preview and asynchronous upload.
+ */
+export default function UserMetaCard({ user, onEdit, onUpdated }: Props) {
   const t = useTranslations("profile");
   const tc = useTranslations("common");
-  const [user, setUser] = useState<User | null>(null);
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  useEffect(() => {
-    /**
-     * Fetches user profile data to populate the identity header on mount
-     */
-    const fetchUser = async () => {
-      try {
-        const data = await getProfile();
-        setUser(data);
-      } catch (error) {
-        console.error("User identification fetch failed:", error);
-        setUser(null);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   const fullName = `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim();
 
   const handleAvatarClick = () => fileInputRef.current?.click();
 
+  const cleanupPreview = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    cleanupPreview();
     setSelectedFile(file);
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
@@ -58,10 +57,15 @@ export default function UserMetaCard({ onEdit }: Props) {
     if (!selectedFile) return;
 
     try {
-      const updatedUser = await updateAvatar(selectedFile);
-      setUser(updatedUser);
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+      await updateAvatar(formData);
+      cleanupPreview();
       setSelectedFile(null);
-      setPreviewUrl(null);
+      onUpdated?.();
+      toast.success(t("editModal.messages.success.profileUpdated"));
+
+      window.dispatchEvent(new Event("user:updated"));
     } catch (error) {
       console.error("Error updating avatar:", error);
     }
@@ -81,6 +85,7 @@ export default function UserMetaCard({ onEdit }: Props) {
               src={previewUrl || user?.avatarUrl || "/images/user/owner.jpg"}
               alt={tc("userDropdown.avatarAlt")}
             />
+
             <div className="absolute inset-0 bg-black/30 opacity-0 hover:opacity-100 flex items-center justify-center text-white text-xs transition">
               {t("userMeta.changeAvatar")}
             </div>
@@ -90,17 +95,16 @@ export default function UserMetaCard({ onEdit }: Props) {
             <h4 className="mb-2 text-lg font-semibold text-center text-gray-800 dark:text-white/90 xl:text-left">
               {fullName || tc("userDropdown.userNamePlaceholder")}
             </h4>
-            <div className="flex flex-col items-center gap-1 text-center xl:flex-row xl:gap-3 xl:text-left">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {user?.email || tc("userDropdown.noEmail")}
-              </p>
-            </div>
+
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {user?.email || tc("userDropdown.noEmail")}
+            </p>
           </div>
         </div>
 
         <button
           onClick={onEdit}
-          className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+          className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 lg:w-auto"
         >
           {tc("buttons.edit")}
         </button>
@@ -113,6 +117,7 @@ export default function UserMetaCard({ onEdit }: Props) {
         className="hidden"
         onChange={handleFileChange}
       />
+
       {selectedFile && (
         <button
           onClick={handleUpdatePhoto}

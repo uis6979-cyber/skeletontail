@@ -1,7 +1,6 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
 
 type User = {
   id: string;
@@ -15,37 +14,16 @@ type User = {
 };
 
 type Props = {
+  user: User | null;
   onEdit: () => void;
 };
 
-export default function UserInfoCard({ onEdit }: Props) {
+/**
+ * Displays user profile details in a read-only format.
+ */
+export default function UserInfoCard({ user, onEdit }: Props) {
   const t = useTranslations("profile");
   const tc = useTranslations("common");
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    // Fetches authenticated user profile data to populate the information card
-    const fetchUser = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/me`,
-          {
-            credentials: "include",
-          }
-        );
-
-        if (!res.ok) throw new Error("Not authenticated");
-
-        const data = await res.json();
-        setUser(data);
-      } catch (error) {
-        console.error("Error fetching user:", error);
-        setUser(null);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -108,7 +86,9 @@ export default function UserInfoCard({ onEdit }: Props) {
                 {t("labels.gender")}
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {user?.gender ? t(`editModal.genders.${user.gender}`) : "-"}
+                {user?.gender
+                  ? t(`editModal.genders.${user.gender}`)
+                  : "-"}
               </p>
             </div>
 
@@ -117,7 +97,9 @@ export default function UserInfoCard({ onEdit }: Props) {
                 {t("labels.language")}
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {user?.language ? tc(`languages.${user.language}`) : "-"}
+                {user?.language
+                  ? tc(`languages.${user.language}`)
+                  : "-"}
               </p>
             </div>
           </div>
