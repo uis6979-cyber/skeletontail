@@ -224,6 +224,11 @@ export class AuthService {
     const permissions = userRoles.flatMap((r) =>
       r.role.permissions.map((p) => p.permission.module),
     );
+    const permissionsModule = userRoles.flatMap((r) =>
+      r.role.permissions.map(
+        (p) => `${p.permission.module}.${p.permission.action}`,
+      ),
+    );
     return this.jwtService.sign({
       sub: user.id,
       email: user.email,
@@ -232,6 +237,7 @@ export class AuthService {
       avatarUrl: user.avatarUrl,
       roles,
       permissions,
+      permissionsModule,
     });
   }
 

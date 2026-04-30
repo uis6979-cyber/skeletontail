@@ -1,7 +1,6 @@
 "use client";
 
-import Input from "@/components/form/input/InputField";
-import Label from "@/components/form/Label";
+import FormField from "@/components/form/FormField";
 import Button from "@/components/ui/button/Button";
 import { authService } from "@/services/auth.service";
 import { useTranslations } from "next-intl";
@@ -23,6 +22,7 @@ export default function ForgotPasswordPage() {
 
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,6 +31,7 @@ export default function ForgotPasswordPage() {
 
         if (!targetEmail) {
             toast.error(t("messages.errors.emailRequired"));
+            setErrors({ email: t("messages.errors.emailRequired") });
             return;
         }
 
@@ -71,18 +72,13 @@ export default function ForgotPasswordPage() {
                 </header>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    <div>
-                        <Label>
-                            {t("labels.email")} <span className="text-error-500">*</span>
-                        </Label>
-
-                        <Input
-                            type="email"
-                            placeholder="info@gmail.com"
-                            defaultValue={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </div>
+                    <FormField
+                        label={t("labels.email")}
+                        value={email}
+                        placeholder="info@gmail.com"
+                        error={errors.email}
+                        onChange={(val) => setEmail(val)}
+                    />
 
                     <Button className="w-full" disabled={loading} type="submit" size="sm">
                         {loading ? t("messages.loading") : t("labels.sendLink")}

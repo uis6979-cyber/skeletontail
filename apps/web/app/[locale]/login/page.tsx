@@ -1,11 +1,9 @@
 "use client";
 
+import FormField from "@/components/form/FormField";
 import Checkbox from "@/components/form/input/Checkbox";
-import Input from "@/components/form/input/InputField";
-import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { useAuth } from "@/hooks/useAuth";
-import { EyeCloseIcon, EyeIcon } from "@/icons";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -32,7 +30,7 @@ export default function SignInForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [localValidationError, setLocalValidationError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,10 +40,12 @@ export default function SignInForm() {
     try {
       if (!email.trim()) {
         setLocalValidationError(t("messages.errors.emailRequired"));
+        setErrors({ email: t("messages.errors.emailRequired") });
         return;
       }
       if (!password.trim()) {
         setLocalValidationError(t("messages.errors.passwordRequired"));
+        setErrors({ password: t("messages.errors.passwordRequired") });
         return;
       }
 
@@ -89,44 +89,24 @@ export default function SignInForm() {
             <form onSubmit={handleSubmit} className="space-y-6">
 
               <div className="space-y-2">
-                <Label>
-                  {t("labels.email")}{" "}
-                  <span className="text-error-500">*</span>
-                </Label>
-
-                <Input
+                <FormField
+                  label={t("labels.email")}
+                  value={email}
                   placeholder="info@gmail.com"
-                  type="email"
-                  defaultValue={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  error={errors.email}
+                  onChange={(val) => setEmail(val)}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>
-                  {t("labels.password")}{" "}
-                  <span className="text-error-500">*</span>
-                </Label>
-
-                <div className="relative">
-                  <Input
-                    type={showPassword ? "text" : "password"}
-                    placeholder={t("labels.passwordPlaceholder")}
-                    defaultValue={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-
-                  <span
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
-                  >
-                    {showPassword ? (
-                      <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
-                    ) : (
-                      <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
-                    )}
-                  </span>
-                </div>
+                <FormField
+                  type={showPassword ? "text" : "password"}
+                  label={t("labels.password")}
+                  value={password}
+                  placeholder={t("labels.passwordPlaceholder")}
+                  error={errors.password}
+                  onChange={(val) => setPassword(val)}
+                />
               </div>
 
               <div className="flex items-center justify-between">
@@ -175,7 +155,7 @@ export default function SignInForm() {
 
           </div>
         </div>
-      </div>
-    </div>
+      </div >
+    </div >
   );
 }

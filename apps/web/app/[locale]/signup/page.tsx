@@ -1,7 +1,6 @@
 "use client";
 
-import Input from "@/components/form/input/InputField";
-import Label from "@/components/form/Label";
+import FormField from "@/components/form/FormField";
 import Button from "@/components/ui/button/Button";
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslations } from "next-intl";
@@ -28,6 +27,7 @@ export default function SignUpPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,12 +36,25 @@ export default function SignUpPage() {
     // Client-side validation for immediate UX feedback
     if (!firstName.trim()) {
       setLocalError(t("messages.errors.firstNameRequired"));
+      setErrors({ firstName: t("messages.errors.firstNameRequired") });
       return;
     }
-    if (!lastName.trim()) return setLocalError(t("messages.errors.lastNameRequired"));
-    if (!email.trim()) return setLocalError(t("messages.errors.emailRequired"));
-    if (!password.trim()) return setLocalError(t("messages.errors.passwordRequired"));
-    if (!confirmPassword.trim()) return setLocalError(t("messages.errors.confirmPasswordRequired"));
+    if (!lastName.trim()) {
+      return setLocalError(t("messages.errors.lastNameRequired"));
+      setErrors({ lastName: t("messages.errors.lastNameRequired") });
+    }
+    if (!email.trim()) {
+      return setLocalError(t("messages.errors.emailRequired"));
+      setErrors({ email: t("messages.errors.emailRequired") });
+    }
+    if (!password.trim()) {
+      return setLocalError(t("messages.errors.passwordRequired"));
+      setErrors({ password: t("messages.errors.passwordRequired") });
+    }
+    if (!confirmPassword.trim()) {
+      return setLocalError(t("messages.errors.confirmPasswordRequired"));
+      setErrors({ confirmPassword: t("messages.errors.confirmPasswordRequired") });
+    }
     if (password !== confirmPassword) return setLocalError(t("messages.errors.passwordsDontMatch"));
 
     try {
@@ -70,66 +83,46 @@ export default function SignUpPage() {
         </h1>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <Label>
-              {t("labels.firstName")} <span className="text-error-500">*</span>
-            </Label>
-            <Input
-              type="text"
-              defaultValue={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-              placeholder={t("labels.firstNamePlaceholder")}
-            />
-          </div>
 
-          <div>
-            <Label>
-              {t("labels.lastName")} <span className="text-error-500">*</span>
-            </Label>
-            <Input
-              type="text"
-              defaultValue={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-              placeholder={t("labels.lastNamePlaceholder")}
-            />
-          </div>
+          <FormField
+            label={t("labels.firstName")}
+            value={firstName}
+            placeholder={t("labels.firstNamePlaceholder")}
+            error={errors.firstName}
+            onChange={(val) => setFirstName(val)}
+          />
 
-          <div>
-            <Label>
-              {t("labels.email")} <span className="text-error-500">*</span>
-            </Label>
-            <Input
-              type="email"
-              defaultValue={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("labels.emailPlaceholder")}
-            />
-          </div>
+          <FormField
+            label={t("labels.lastName")}
+            value={lastName}
+            placeholder={t("labels.lastNamePlaceholder")}
+            error={errors.lastName}
+            onChange={(val) => setLastName(val)}
+          />
 
-          <div>
-            <Label>
-              {t("labels.password")} <span className="text-error-500">*</span>
-            </Label>
-            <Input
-              type="password"
-              value={password}
-              required
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder={t("labels.passwordPlaceholder")}
-            />
-          </div>
+          <FormField
+            label={t("labels.email")}
+            value={email}
+            placeholder={t("labels.emailPlaceholder")}
+            error={errors.email}
+            onChange={(val) => setEmail(val)}
+          />
 
-          <div>
-            <Label>
-              {t("labels.confirmPassword")} <span className="text-error-500">*</span>
-            </Label>
-            <Input
-              type="password"
-              defaultValue={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder={t("labels.confirmPasswordPlaceholder")}
-            />
-          </div>
+          <FormField
+            label={t("labels.password")}
+            value={password}
+            placeholder={t("labels.passwordPlaceholder")}
+            error={errors.password}
+            onChange={(val) => setPassword(val)}
+          />
+
+          <FormField
+            label={t("labels.confirmPassword")}
+            value={confirmPassword}
+            placeholder={t("labels.confirmPasswordPlaceholder")}
+            error={errors.confirmPassword}
+            onChange={(val) => setConfirmPassword(val)}
+          />
 
           {localError && <p className="text-sm text-red-500">{localError}</p>}
 

@@ -143,14 +143,6 @@ export class RolesService {
     });
   }
 
-  async remove(id: string) {
-    await this.findOne(id);
-
-    return this.prisma.role.delete({
-      where: { id },
-    });
-  }
-
   async findAllPermissions() {
     return this.prisma.permission.findMany({
       where: { isActive: true },

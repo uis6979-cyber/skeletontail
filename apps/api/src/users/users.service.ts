@@ -143,15 +143,6 @@ export class UsersService {
     }
   }
 
-  /** Permanently deletes a user record. */
-  async remove(id: string) {
-    await this.findOne(id);
-
-    return this.prisma.user.delete({
-      where: { id },
-    });
-  }
-
   /** Fetches active roles available for user assignment. */
   async findAllRoles() {
     return this.prisma.role.findMany({

@@ -1,28 +1,33 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import { JwtPayload } from "../../auth/jwt-payload.interface";
+import { PERMISSIONS_KEY } from "../decorators/permissions.decorator";
 
+/**
+ * PermissionsGuard enforces access control based on granular permissions defined on routes.
+ * It checks if the authenticated user possesses all required permissions for the requested operation.
+ */
 @Injectable()
 export class PermissionsGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    /**
-     * Granular authorization check: verifies required permissions
-     * defined via metadata against the user's JWT payload.
-     */
-    const requiredPermissions = this.reflector.get<string[]>(
-      "permissions",
-      context.getHandler(),
+    // Retrieve required permissions from route metadata
+    const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
+      PERMISSIONS_KEY,
+      [context.getHandler(), context.getClass()],
     );
 
-    if (!requiredPermissions) return true;
+    if (!requiredPermissions) return true; // No specific permissions required for this route
 
     const request = context.switchToHttp().getRequest();
-    const user: JwtPayload = request.user;
+    const user = request.user;
 
-    if (!user?.permissions) return false;
+    if (!user || !user.permissionsModule) return false; // Deny if no user or permissions are available
 
-    return requiredPermissions.every((perm) => user.permissions.includes(perm));
+    const hasAccess = requiredPermissions.every((perm) =>
+      user.permissionsModule.includes(perm),
+    );
+
+    return hasAccess;
   }
 }
