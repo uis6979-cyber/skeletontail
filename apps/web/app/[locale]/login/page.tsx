@@ -97,8 +97,7 @@ export default function SignInForm() {
                 <Input
                   placeholder="info@gmail.com"
                   type="email"
-                  value={email}
-                  required
+                  defaultValue={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
@@ -113,8 +112,7 @@ export default function SignInForm() {
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder={t("labels.passwordPlaceholder")}
-                    value={password}
-                    required
+                    defaultValue={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
 

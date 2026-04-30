@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { handlePrismaError } from "../common/utils/prisma-error.util";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateRoleDto } from "./dto/create-role.dto";
 import { UpdateRoleDto } from "./dto/update-role.dto";
@@ -18,8 +19,7 @@ export class RolesService {
   }
 
   /**
-   * Retrieves a single role by ID.
-   * Throws localized NotFoundException if the record does not exist.
+   * Retrieves a role by ID with flattened permission IDs for frontend consumption.
    */
   async findOne(id: string) {
     const role = await this.prisma.role.findUnique({
@@ -42,61 +42,70 @@ export class RolesService {
       permissions: role.permissions.map((p) => p.permissionId),
     };
   }
+
   /**
-   * Provisions a new role along with its initial permission mappings.
+   * Creates a new role and establishes many-to-many permission relationships.
    */
   async create(dto: CreateRoleDto) {
-    const { permissions, ...roleData } = dto;
+    try {
+      const { permissions, ...roleData } = dto;
 
-    return this.prisma.role.create({
-      data: {
-        ...roleData,
-        isActive: dto.isActive ?? true,
-        permissions: permissions?.length
-          ? {
-              create: permissions.map((permissionId) => ({
-                permissionId,
-              })),
-            }
-          : undefined,
-      },
-      include: {
-        permissions: true,
-      },
-    });
+      return await this.prisma.role.create({
+        data: {
+          ...roleData,
+          isActive: dto.isActive ?? true,
+          permissions: permissions?.length
+            ? {
+                create: permissions.map((permissionId) => ({
+                  permissionId,
+                })),
+              }
+            : undefined,
+        },
+        include: {
+          permissions: true,
+        },
+      });
+    } catch (error: any) {
+      handlePrismaError(error, "roles.messages.validations");
+      throw error;
+    }
   }
 
   /**
-   * Updates role metadata and synchronizes permission relationships.
-   * Existing permission mappings are purged and replaced with the provided set.
+   * Updates role attributes and synchronizes permissions via a delete-and-recreate strategy.
    */
   async update(id: string, dto: UpdateRoleDto) {
-    await this.findOne(id);
+    try {
+      await this.findOne(id);
 
-    const { permissions, ...roleData } = dto;
+      const { permissions, ...roleData } = dto;
 
-    return this.prisma.role.update({
-      where: { id },
-      data: {
-        ...roleData,
-        permissions: permissions
-          ? {
-              deleteMany: {},
-              create: permissions.map((permissionId) => ({
-                permissionId,
-              })),
-            }
-          : undefined,
-      },
-      include: {
-        permissions: true,
-      },
-    });
+      return await this.prisma.role.update({
+        where: { id },
+        data: {
+          ...roleData,
+          permissions: permissions
+            ? {
+                deleteMany: {},
+                create: permissions.map((permissionId) => ({
+                  permissionId,
+                })),
+              }
+            : undefined,
+        },
+        include: {
+          permissions: true,
+        },
+      });
+    } catch (error: any) {
+      handlePrismaError(error, "roles.messages.validations");
+      throw error;
+    }
   }
 
   /**
-   * Toggles the active status of a role.
-   * Enforces a constraint to prevent disabling roles that have active user associations.
+   * Toggles role status. Prevents deactivation if the role is assigned to active users.
    */
   async toggleStatus(id: string) {
     const role = await this.findOne(id);
@@ -142,9 +151,6 @@ export class RolesService {
     });
   }
 
-  /**
-   * Retrieves all permissions currently flagged as active, sorted by module.
-   */
   async findAllPermissions() {
     return this.prisma.permission.findMany({
       where: { isActive: true },

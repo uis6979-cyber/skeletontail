@@ -1,12 +1,14 @@
 "use client";
 
 import FormField from "@/components/form/FormField";
+import Checkbox from "@/components/form/input/Checkbox";
 import Button from "@/components/ui/button/Button";
+import { handleFormError } from "@/lib/utils/handleFormError";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import type { Role } from "./columns";
-import { createRole, updateRole } from "./services/roles.api";
+import type { Role } from "../partial/columns";
+import { createRole, updateRole } from "../services/roles.api";
 
 type Permission = {
     id: string;
@@ -118,28 +120,12 @@ export default function RoleForm({
 
             onSuccess();
         } catch (err: any) {
-            const message = err?.message;
-
-            if (Array.isArray(message)) {
-                const fieldErrors: Record<string, string> = {};
-
-                message.forEach((e: any) => {
-                    fieldErrors[e.field] = e.message.includes(".")
-                        ? tRoot(e.message)
-                        : e.message;
-                });
-
-                setErrors(fieldErrors);
-                return;
-            }
-
-            toast.error(
-                typeof message === "string"
-                    ? message.includes(".")
-                        ? tRoot(message)
-                        : message
-                    : tc("messages.error")
-            );
+            handleFormError({
+                err,
+                setErrors,
+                tRoot,
+                tCommon: tc,
+            });
         } finally {
             setLoading(false);
         }
@@ -175,13 +161,14 @@ export default function RoleForm({
                         {t("form.permissionsLabel")}
                     </label>
 
-                    <button
+                    <Button
+                        size="xs"
                         type="button"
                         onClick={toggleAll}
                         className="text-xs font-medium text-brand-500 hover:underline"
                     >
                         {isAllSelected ? t("form.deselectAll") : t("form.selectAll")}
-                    </button>
+                    </Button>
                 </div>
 
                 <div className="space-y-4">
@@ -203,7 +190,8 @@ export default function RoleForm({
                                     {module}
                                 </h4>
 
-                                <button
+                                <Button
+                                    size="xs"
                                     type="button"
                                     onClick={() => toggleModule(perms)}
                                     className="text-xs text-brand-500 hover:underline"
@@ -211,7 +199,7 @@ export default function RoleForm({
                                     {isModuleSelected(perms)
                                         ? t("form.deselectModule")
                                         : t("form.selectModule")}
-                                </button>
+                                </Button>
                             </div>
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -224,19 +212,11 @@ export default function RoleForm({
                                             cursor-pointer
                                         "
                                     >
-                                        <input
-                                            type="checkbox"
-                                            className="
-                                                h-4 w-4 rounded
-                                                border-gray-300 dark:border-white/20
-                                                text-brand-500
-                                                focus:ring-brand-500
-                                                dark:bg-gray-700
-                                            "
+                                        <Checkbox
                                             checked={permissions.includes(perm.id)}
-                                            onChange={(e) => {
+                                            onChange={(checked) => {
                                                 setPermissions((prev) =>
-                                                    e.target.checked
+                                                    checked
                                                         ? [...prev, perm.id]
                                                         : prev.filter((id) => id !== perm.id)
                                                 );
@@ -256,7 +236,7 @@ export default function RoleForm({
                 disabled={loading}
                 onClick={handleSubmit}
                 className="w-full justify-center"
-                size="sm"
+                size="xs"
             >
                 {loading
                     ? tc("messages.loading")

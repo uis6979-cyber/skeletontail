@@ -108,13 +108,29 @@
       "close": "Cerrar",
       "back": "Volver"
     },
+    "placeholders": {
+      "select": "Seleccionar una opción",
+      "date": "Seleccionar fecha"
+    },
     "table": {
       "searchPlaceholder": "Buscar...",
       "export": "Exportar",
       "show": "Mostrar",
       "entries": "Entradas",
       "statusAll": "Todos",
-      "defaultFilename": "tabla"
+      "defaultFilename": "tabla",
+      "defaultSheetName": "Datos",
+      "previous": "Anterior",
+      "next": "Siguiente",
+      "sortColumn": "Ordenar por {name}",
+      "paginationInfo": "Mostrando {start} a {end} de {total} entradas",
+      "paginationLabel": "Paginación",
+      "teamMemberAlt": "Miembro del equipo {number}",
+      "user": "Usuario",
+      "projectName": "Nombre del Proyecto",
+      "team": "Equipo",
+      "status": "Estado",
+      "budget": "Presupuesto"
     },
     "languages": {
       "en": "Inglés",
@@ -129,7 +145,10 @@
       "noData": "No hay datos disponibles",
       "apiRunning": "API en ejecución 🚀",
       "confirmTitle": "Confirmar Acción",
-      "confirmBody": "¿Estás seguro de que deseas continuar?"
+      "confirmBody": "¿Estás seguro de que deseas continuar?",
+      "errors": {
+        "fieldsMustMatch": "Los campos deben coincidir"
+      }
     },
     "actions": {
       "edit": "Editar",
@@ -140,7 +159,9 @@
     "status": { 
       "active": "Activo", 
       "inactive": "Inactivo",
-      "statusAll": "Todos"
+      "statusAll": "Todos",
+      "pending": "Pendiente",
+      "cancel": "Cancelado"
      },
     "userDropdown": {
       "userNamePlaceholder": "Nombre de Usuario",
@@ -231,13 +252,20 @@
       "title": "Editar Información Personal",
       "subtitle": "Actualiza tus datos para mantener tu perfil al día.",
       "sectionTitle": "Información Personal",
+      "tabs": {
+        "profile": "Perfil",
+        "password": "Contraseña"
+      },
       "labels": {
         "firstName": "Nombre *",
         "lastName": "Apellido *",
         "email": "Correo *",
         "phone": "Teléfono *",
         "birthDate": "Fecha de Nacimiento",
-        "gender": "Género"
+        "gender": "Género",
+        "currentPassword": "Contraseña actual",
+        "newPassword": "Nueva contraseña",
+        "confirmPassword": "Confirmar contraseña"
       },
       "placeholders": {
         "gender": "Seleccionar"
@@ -246,6 +274,9 @@
         "male": "Masculino",
         "female": "Femenino"
       },
+      "buttons": {
+        "updatePassword": "Actualizar contraseña"
+      },
       "messages": {
         "errors": {
           "firstNameRequired": "El nombre es obligatorio",
@@ -253,10 +284,20 @@
           "emailRequired": "El correo es obligatorio",
           "emailInvalid": "Formato de correo inválido",
           "phoneRequired": "El teléfono es obligatorio",
-          "genderRequired": "El género es obligatorio"
+          "genderRequired": "El género es obligatorio",
+          "passwordsDontMatch": "Las contraseñas no coinciden",
+          "birthDateInvalid": "La fecha de nacimiento debe ser una fecha válida",
+          "genderInvalid": "El género debe ser masculino o femenino",
+          "currentPasswordRequired": "La contraseña actual es obligatoria",
+          "currentPasswordInvalid": "La contraseña actual es incorrecta",
+          "newPasswordRequired": "La nueva contraseña es obligatoria",
+          "newPasswordMin": "La nueva contraseña debe tener al menos 8 caracteres",
+          "confirmPasswordRequired": "La confirmación de contraseña es obligatoria",
+          "passwordMustBeDifferent": "La nueva contraseña debe ser diferente a la actual"
         },
         "success": {
-          "profileUpdated": "Perfil actualizado correctamente"
+          "profileUpdated": "Perfil actualizado correctamente",
+          "passwordUpdated": "Contraseña actualizada correctamente"
         }
       }
     },
@@ -300,7 +341,7 @@
     "developer": { "name": "Desarrollador", "description": "Acceso total al sistema" },
     "user": { "name": "Usuario", "description": "Acceso general al sistema" },
     "labels": {
-      "name": "Rol",
+      "name": "Nombre",
       "slug": "Slug",
       "description": "Descripción",
       "status": "Estado",
@@ -308,7 +349,9 @@
       "create": "Crear Rol",
       "edit": "Editar Rol"
     },
+    "reportName": "reporte_roles",
     "form": {
+      "viewTitle": "Ver Rol",
       "editTitle": "Editar Rol",
       "createTitle": "Crear Rol",
       "nameLabel": "Nombre del Rol",
@@ -318,9 +361,9 @@
       "descriptionLabel": "Descripción",
       "descriptionPlaceholder": "Ingrese la descripción del rol",
       "permissionsLabel": "Permisos",
-      "deselectAll": "Quitar todos",
+      "deselectAll": "Deseleccionar todo",
       "selectAll": "Seleccionar todo",
-      "deselectModule": "Quitar módulo",
+      "deselectModule": "Deseleccionar módulo",
       "selectModule": "Seleccionar módulo"
     },
     "messages": {
@@ -329,16 +372,20 @@
       "validations": {
         "nameRequired": "El nombre del rol es obligatorio",
         "slugRequired": "El slug es obligatorio",
-        "descriptionRequired": "La descripción es obligatoria"
+        "permissionsRequired": "Debe seleccionar al menos un permiso",
+        "descriptionRequired": "La descripción es obligatoria",
+        "slugAlreadyExists": "El slug del rol ya existe",
+        "nameAlreadyExists": "El nombre del rol ya existe"
       },
       "errors": {
+        "roleNotFound": "Rol no encontrado",
         "loadFailed": "Error al cargar los detalles del rol",
         "fetchFailed": "Error al obtener los roles",
         "toggleFailed": "Error al cambiar el estado del rol",
         "updateFailed": "Error al actualizar el rol",
         "createFailed": "Error al crear el rol",
-        "roleHasActiveUsers": "No se puede desactivar el rol porque tiene usuarios activos",
-        "fetchPermissionsFailed": "Error al obtener los permisos"
+        "deleteFailed": "Error al eliminar el rol",
+        "roleHasActiveUsers": "No se puede desactivar el rol porque tiene usuarios activos"
       },
       "success": {
         "statusChange": "Estado del rol actualizado correctamente",
@@ -355,15 +402,22 @@
   "users": {
     "title": "Usuarios",
     "create": "Crear Usuario",
-    "noUsers": "No se encontraron usuarios",
+    "noUsers": "No hay usuarios encontrados",
+    "reportName": "reporte_usuarios",
     "labels": {
+      "fullName": "Nombres completos",
       "firstName": "Nombre",
       "lastName": "Apellido",
       "email": "Correo",
       "password": "Contraseña",
+      "birthDay": "Fecha de nacimiento",
+      "gender": "Género",
+      "phone": "Teléfono",
       "status": "Estado",
       "role": "Rol",
-      "actions": "Acciones"
+      "actions": "Acciones",
+      "create": "Crear Usuario",
+      "edit": "Editar Usuario"
     },
     "table": {
       "name": "Nombre",
@@ -371,6 +425,57 @@
       "role": "Rol",
       "status": "Estado",
       "actions": "Acciones"
+    },
+    "form": {
+      "editTitle": "Editar Usuario",
+      "createTitle": "Crear Usuario",
+      "firstNameLabel": "Nombre",
+      "lastNameLabel": "Apellido",
+      "emailLabel": "Correo",
+      "passwordLabel": "Contraseña",
+      "birthDateLabel": "Fecha de nacimiento",
+      "genderLabel": "Género",
+      "phoneLabel": "Teléfono",
+      "rolesLabel": "Roles",
+      "viewTitle":"Ver Rol",
+      "genderMale": "Masculino",
+      "genderFemale": "Femenino",
+      "confirmPasswordLabel": "Confirmar contraseña",
+      "changePassword": "Cambiar contraseña"
+    },
+    "messages": {
+      "enable":"Activo",
+      "disable": "Inactivo",
+      "validations": {
+        "firstNameRequired": "El nombre es obligatorio",
+        "lastNameRequired": "El apellido es obligatorio",
+        "emailRequired": "El correo es obligatorio",
+        "passwordRequired":"La contraseña es obligatoria",
+        "confirmPasswordRequired": "La confirmación de contraseña es obligatoria",
+        "passwordsDontMatch": "Las contraseñas no coinciden",
+        "birthDateRequired": "La fecha de nacimiento es obligatoria",
+        "genderRequired": "El género es obligatorio",
+        "invalidEmail": "Formato de correo electrónico inválido",
+        "invalidGender": "Seleccione un genero correcto",
+        "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+        "confirmPasswordMinLength": "La confirmación de contraseña debe tener al menos 8 caracteres",
+        "passwordMismatch": "Las contraseñas no coinciden"
+      },
+      "success": {
+        "updateSuccess": "Usuario actualizado correctamente",
+        "createSuccess": "Usuario creado correctamente",
+        "statusChange": "Estado del usuario actualizado correctamente",
+        "passwordChanged": "Contraseña actualizada correctamente"
+      },
+      "errors": {
+        "loadFailed": "Error al cargar los detalles del usuario",
+        "toggleFailed": "Error al cambiar el estado del usuario"
+      },
+      "confirm":{
+        "toggleTitle": "Cambiar estado del usuario",
+        "disable": "¿Estás seguro de que deseas desactivar este usuario?",
+        "enable": "¿Estás seguro de que deseas activar este usuario?"
+      }
     }
   }
 }

@@ -76,8 +76,7 @@ export default function SignUpPage() {
             </Label>
             <Input
               type="text"
-              value={firstName}
-              required
+              defaultValue={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               placeholder={t("labels.firstNamePlaceholder")}
             />
@@ -89,8 +88,7 @@ export default function SignUpPage() {
             </Label>
             <Input
               type="text"
-              value={lastName}
-              required
+              defaultValue={lastName}
               onChange={(e) => setLastName(e.target.value)}
               placeholder={t("labels.lastNamePlaceholder")}
             />
@@ -102,8 +100,7 @@ export default function SignUpPage() {
             </Label>
             <Input
               type="email"
-              value={email}
-              required
+              defaultValue={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t("labels.emailPlaceholder")}
             />
@@ -128,8 +125,7 @@ export default function SignUpPage() {
             </Label>
             <Input
               type="password"
-              value={confirmPassword}
-              required
+              defaultValue={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder={t("labels.confirmPasswordPlaceholder")}
             />

@@ -1,42 +1,40 @@
 import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
 } from "@nestjs/common";
-import { existsSync, unlinkSync } from "fs";
+import bcrypt from "bcryptjs";
+import { existsSync, mkdirSync, unlinkSync } from "fs";
 import { join } from "path";
+import sharp from "sharp";
 import { PrismaService } from "../prisma/prisma.service";
-
-export interface UpdateProfileData {
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  birthDate?: string | Date;
-  gender?: "male" | "female";
-  language?: "en" | "es";
-}
+import { ChangePasswordDto } from "./dto/change-password.dto";
+import { UpdateProfileDto } from "./dto/update-profile.dto";
 
 @Injectable()
 export class ProfileService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Updates the user avatar and purges the previous asset from storage to prevent stale files.
+   * Processes user avatar updates, including image transformation and asset cleanup.
    */
   async updateAvatar(userId: string, file: Express.Multer.File) {
     try {
-      if (!file?.filename) {
-        throw new BadRequestException(
-          "profile.messages.errors.updateAvatarFailed",
-        );
-      }
-
-      const newPath = `/uploads/avatars/${userId}/${file.filename}`;
+      const dir = join(process.cwd(), "public", "uploads", "avatars", userId);
+      if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
       const user = await this.prisma.user.findUnique({
         where: { id: userId },
         select: { avatarUrl: true },
       });
+
+      const filename = `avatar-${Date.now()}.png`;
+      const fullPath = join(dir, filename);
+
+      await sharp(file.buffer).png().toFile(fullPath);
+
+      const newPath = `/uploads/avatars/${userId}/${filename}`;
 
       if (user?.avatarUrl) {
         const oldPath = join(
@@ -44,15 +42,11 @@ export class ProfileService {
           "public",
           user.avatarUrl.replace(/^\//, ""),
         );
-
         if (existsSync(oldPath)) {
           try {
             unlinkSync(oldPath);
           } catch (err) {
-            console.warn(
-              `Legacy avatar cleanup failed for path: ${oldPath}`,
-              err,
-            );
+            console.warn("Failed to delete old avatar:", err);
           }
         }
       }
@@ -63,18 +57,14 @@ export class ProfileService {
         select: { id: true, avatarUrl: true },
       });
     } catch (err) {
-      if (err instanceof BadRequestException) throw err;
-
-      console.error("Avatar persistence failure:", err);
+      console.error("Avatar upload failed:", err);
       throw new BadRequestException(
         "profile.messages.errors.updateAvatarFailed",
       );
     }
   }
 
-  /**
-   * Retrieves profile data. Throws NotFoundException with a localized key if the user record is missing.
-   */
+  /** Retrieves user profile with standardized metadata. */
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -91,17 +81,12 @@ export class ProfileService {
       },
     });
 
-    if (!user) {
-      throw new NotFoundException("common.messages.userNotFound");
-    }
-
+    if (!user) throw new NotFoundException("common.messages.userNotFound");
     return user;
   }
 
-  /**
-   * Updates profile attributes with conditional field handling and birth date normalization.
-   */
-  async updateProfile(userId: string, data: UpdateProfileData) {
+  /** Persists profile updates including birthDate normalization. */
+  async updateProfile(userId: string, data: UpdateProfileDto) {
     try {
       return await this.prisma.user.update({
         where: { id: userId },
@@ -110,10 +95,7 @@ export class ProfileService {
           lastName: data.lastName,
           phone: data.phone,
           gender: data.gender,
-          language: data.language,
-          ...(data.birthDate !== undefined && {
-            birthDate: data.birthDate ? new Date(data.birthDate) : null,
-          }),
+          birthDate: data.birthDate ? new Date(data.birthDate) : null,
         },
         select: {
           id: true,
@@ -123,8 +105,6 @@ export class ProfileService {
           phone: true,
           birthDate: true,
           gender: true,
-          language: true,
-          avatarUrl: true,
         },
       });
     } catch (error) {
@@ -133,5 +113,46 @@ export class ProfileService {
         "profile.messages.errors.updateProfileFailed",
       );
     }
+  }
+
+  /** Validates current credentials and updates user password. */
+  async changePassword(userId: string, dto: ChangePasswordDto) {
+    const { currentPassword, newPassword, confirmPassword } = dto;
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException(
+        "profile.editModal.messages.errors.passwordsDontMatch",
+      );
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { password: true },
+    });
+
+    if (!user) throw new UnauthorizedException("common.messages.userNotFound");
+
+    const isValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isValid) {
+      throw new BadRequestException(
+        "profile.editModal.messages.errors.currentPasswordInvalid",
+      );
+    }
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      throw new BadRequestException(
+        "profile.editModal.messages.errors.passwordMustBeDifferent",
+      );
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+
+    return { success: true };
   }
 }

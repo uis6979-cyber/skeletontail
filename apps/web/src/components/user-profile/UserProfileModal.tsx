@@ -1,27 +1,16 @@
 "use client";
 
-import { getProfile, updateProfile } from "@/lib/api/profile";
+import Modal from "@/components/common/Modal";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { changePassword, getProfile, updateProfile } from "@/lib/api/profile";
+import { Lock, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import Input from "../form/input/InputField";
-import Label from "../form/Label";
+import FormField from "../form/FormField";
 import Button from "../ui/button/Button";
-import { Modal } from "../ui/modal";
 
-type User = {
-    id: string;
-    email: string;
-    firstName?: string | null;
-    lastName?: string | null;
-    phone?: string | null;
-    birthDate?: string | null;
-    gender?: "male" | "female" | null;
-    language?: "es" | "en" | null;
-    avatarUrl?: string | null;
-};
-
-type Errors = Partial<Record<keyof User, string>>;
+type Gender = "male" | "female" | "";
 
 type Props = {
     isOpen: boolean;
@@ -29,210 +18,287 @@ type Props = {
     onUpdated?: () => void;
 };
 
-export default function UserProfileModal({ isOpen, onClose, onUpdated }: Props) {
+/**
+ * UserProfileModal manages personal information updates and password changes.
+ * It utilizes a tabbed interface for organizational clarity and handles 
+ * validation errors returned from the API.
+ */
+export default function UserProfileModal({
+    isOpen,
+    onClose,
+    onUpdated,
+}: Props) {
     const t = useTranslations("profile.editModal");
+    const tp = useTranslations("profile");
     const tc = useTranslations("common");
+    const tRoot = useTranslations();
 
-    const [user, setUser] = useState<User | null>(null);
-    const [errors, setErrors] = useState<Errors>({});
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [email, setEmail] = useState("");
+    const [phone, setPhone] = useState("");
+    const [birthDate, setBirthDate] = useState("");
+    const [gender, setGender] = useState<Gender>("");
 
-    /**
-     * Synchronize local state with fresh profile data whenever modal opens
-     */
+    const [passwords, setPasswords] = useState({
+        current: "",
+        new: "",
+        confirm: "",
+    });
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
+
     useEffect(() => {
         if (!isOpen) return;
 
         const fetchUser = async () => {
             try {
                 const data = await getProfile();
-                setUser(data);
-            } catch (error) {
-                console.error("Profile fetch error:", error);
+                setFirstName(data.firstName ?? "");
+                setLastName(data.lastName ?? "");
+                setEmail(data.email ?? "");
+                setPhone(data.phone ?? "");
+                setBirthDate(data.birthDate ? data.birthDate.split("T")[0] : "");
+                setGender((data.gender as Gender) ?? "");
+
+                setErrors({});
+            } catch {
+                toast.error(tp("messages.errors.fetchFailed"));
             }
         };
 
         fetchUser();
     }, [isOpen]);
 
-    const handleChange = (field: keyof User, value: string) => {
-        setUser((prev) => ({
-            ...(prev || ({} as User)),
+    useEffect(() => {
+        if (!isOpen) return;
+        setPasswords({
+            current: "",
+            new: "",
+            confirm: "",
+        });
+        setErrors({});
+    }, [isOpen]);
+
+    // Clears a specific field error from the state when a user resumes typing
+    const clearError = (field: string) => {
+        setErrors((prev) => {
+            const updated = { ...prev };
+            delete updated[field];
+            return updated;
+        });
+    };
+
+    // Local handler for password state to ensure dynamic error clearing for validation feedback
+    const handlePasswordChange = (
+        field: keyof typeof passwords,
+        value: string
+    ) => {
+        setPasswords((prev) => ({
+            ...prev,
             [field]: value,
         }));
 
-        setErrors((prev) => ({
-            ...prev,
-            [field]: "",
-        }));
+        if (field === "current") clearError("currentPassword");
+        if (field === "new") clearError("newPassword");
+        if (field === "confirm") clearError("confirmPassword");
     };
 
-    const validate = (): boolean => {
-        if (!user) return false;
-
-        const newErrors: Errors = {};
-
-        if (!user.firstName?.trim()) {
-            newErrors.firstName = "messages.errors.firstNameRequired";
-        }
-        if (!user.lastName?.trim()) {
-            newErrors.lastName = "messages.errors.lastNameRequired";
-        }
-        if (!user.email?.trim()) {
-            newErrors.email = "messages.errors.emailRequired";
-        } else if (!/^\S+@\S+\.\S+$/.test(user.email)) {
-            newErrors.email = "messages.errors.emailInvalid";
-        }
-        if (!user.phone?.trim()) {
-            newErrors.phone = "messages.errors.phoneRequired";
-        }
-        if (!user.gender) {
-            newErrors.gender = "messages.errors.genderRequired";
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    /**
-     * Persists profile changes and notifies parent components of state updates
-     */
-    const handleSave = async () => {
-        if (!validate()) return;
-
+    // Persists profile metadata updates
+    const handleSaveProfile = async () => {
         try {
-            if (!user) return;
+            setErrors({});
 
             await updateProfile({
-                firstName: user.firstName,
-                lastName: user.lastName,
-                phone: user.phone,
-                birthDate: user.birthDate,
-                gender: user.gender,
-                language: user.language,
+                firstName,
+                lastName,
+                phone,
+                birthDate,
+                gender,
             });
 
             toast.success(t("messages.success.profileUpdated"));
-
-            await onUpdated?.();
+            onUpdated?.();
             onClose();
         } catch (err: any) {
-            const rawMessage =
-                err?.response?.data?.message ||
-                err?.message ||
-                "messages.errors.unknownError";
+            if (err.type === "validation") {
+                setErrors(err.fields);
+                return;
+            }
 
-            const message = rawMessage.includes(".") ? t(rawMessage as any) : rawMessage;
-            toast.error(message);
+            toast.error(tc("messages.error"));
+        }
+    };
+
+    // Persists password changes with client-side match validation
+    const handleChangePassword = async () => {
+        try {
+            setErrors({});
+
+            if (passwords.new !== passwords.confirm) {
+                setErrors({
+                    confirmPassword: t("messages.errors.passwordsDontMatch"),
+                });
+                return;
+            }
+
+            await changePassword({
+                currentPassword: passwords.current,
+                newPassword: passwords.new,
+                confirmPassword: passwords.confirm,
+            });
+
+            toast.success(t("messages.success.passwordUpdated"));
+            onUpdated?.();
+            onClose();
+        } catch (err: any) {
+            if (err.type === "validation") {
+                setErrors(err.fields);
+                return;
+            }
+            const message = err?.message;
+            toast.error(
+                typeof message === "string"
+                    ? message.includes(".")
+                        ? tRoot(message)
+                        : message
+                    : tc("messages.error")
+            );
         }
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
-            <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-                <div className="px-2 pr-14">
-                    <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-                        {t("title")}
-                    </h4>
-                    <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-                        {t("subtitle")}
-                    </p>
-                </div>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title={t("title")}
+            className="max-w-[700px]"
+        >
+            <Tabs defaultValue="profile">
+                <TabsList className="grid grid-cols-2 mb-6">
+                    <TabsTrigger value="profile" className="flex items-center gap-2">
+                        <User size={16} />
+                        {t("tabs.profile")}
+                    </TabsTrigger>
 
-                <form
-                    className="flex flex-col"
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleSave();
-                    }}
-                >
-                    <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-                        <div className="mt-4">
-                            <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90">
-                                {t("sectionTitle")}
-                            </h5>
+                    <TabsTrigger value="password" className="flex items-center gap-2">
+                        <Lock size={16} />
+                        {t("tabs.password")}
+                    </TabsTrigger>
+                </TabsList>
 
-                            <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                                <div>
-                                    <Label>{t("labels.firstName")}</Label>
-                                    <Input
-                                        type="text"
-                                        defaultValue={user?.firstName || ""}
-                                        onChange={(e) => handleChange("firstName", e.target.value)}
-                                    />
-                                    {errors.firstName && (
-                                        <p className="text-xs text-red-500">{t(errors.firstName as any)}</p>
-                                    )}
-                                </div>
+                <TabsContent value="profile">
+                    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+                        <FormField
+                            label={t("labels.firstName")}
+                            value={firstName}
+                            error={errors.firstName ? tRoot(errors.firstName) : undefined}
+                            onChange={(v) => {
+                                setFirstName(v);
+                                clearError("firstName");
+                            }}
+                        />
 
-                                <div>
-                                    <Label>{t("labels.lastName")}</Label>
-                                    <Input
-                                        type="text"
-                                        defaultValue={user?.lastName || ""}
-                                        onChange={(e) => handleChange("lastName", e.target.value)}
-                                    />
-                                    {errors.lastName && (
-                                        <p className="text-xs text-red-500">{t(errors.lastName as any)}</p>
-                                    )}
-                                </div>
+                        <FormField
+                            label={t("labels.lastName")}
+                            value={lastName}
+                            error={errors.lastName ? tRoot(errors.lastName) : undefined}
+                            onChange={(v) => {
+                                setLastName(v);
+                                clearError("lastName");
+                            }}
+                        />
 
-                                <div>
-                                    <Label>{t("labels.email")}</Label>
-                                    <Input type="text" defaultValue={user?.email || ""} disabled />
-                                </div>
+                        <FormField
+                            label={t("labels.email")}
+                            value={email}
+                            disabled
+                            onChange={() => { }}
+                        />
 
-                                <div>
-                                    <Label>{t("labels.phone")}</Label>
-                                    <Input
-                                        type="text"
-                                        defaultValue={user?.phone || ""}
-                                        onChange={(e) => handleChange("phone", e.target.value)}
-                                    />
-                                    {errors.phone && (
-                                        <p className="text-xs text-red-500">{t(errors.phone as any)}</p>
-                                    )}
-                                </div>
+                        <FormField
+                            label={t("labels.phone")}
+                            value={phone}
+                            error={errors.phone ? tRoot(errors.phone) : undefined}
+                            onChange={(v) => {
+                                setPhone(v);
+                                clearError("phone");
+                            }}
+                        />
 
-                                <div>
-                                    <Label>{t("labels.birthDate")}</Label>
-                                    <Input
-                                        type="date"
-                                        defaultValue={user?.birthDate ? user.birthDate.split("T")[0] : ""}
-                                        onChange={(e) => handleChange("birthDate", e.target.value)}
-                                    />
-                                </div>
+                        <FormField
+                            label={t("labels.birthDate")}
+                            value={birthDate}
+                            type="date"
+                            error={errors.birthDate ? tRoot(errors.birthDate) : undefined}
+                            onChange={(v) => {
+                                setBirthDate(v);
+                                clearError("birthDate");
+                            }}
+                        />
 
-                                <div>
-                                    <Label>{t("labels.gender")}</Label>
-                                    <select
-                                        className="w-full rounded-lg border px-3 py-2 dark:bg-gray-800"
-                                        value={user?.gender || ""}
-                                        onChange={(e) => handleChange("gender", e.target.value)}
-                                    >
-                                        <option value="">{t("placeholders.gender")}</option>
-                                        <option value="male">{t("genders.male")}</option>
-                                        <option value="female">{t("genders.female")}</option>
-                                    </select>
-
-                                    {errors.gender && (
-                                        <p className="text-xs text-red-500">{t(errors.gender as any)}</p>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        <FormField
+                            label={t("labels.gender")}
+                            value={gender}
+                            error={errors.gender ? tRoot(errors.gender) : undefined}
+                            onChange={(v) => {
+                                setGender(v as Gender);
+                                clearError("gender");
+                            }}
+                            options={[
+                                { label: t("genders.male"), value: "male" },
+                                { label: t("genders.female"), value: "female" },
+                            ]}
+                        />
                     </div>
 
-                    <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-                        <Button size="sm" variant="outline" type="button" onClick={onClose}>
-                            {tc("buttons.close")}
-                        </Button>
-
-                        <Button size="sm" type="submit">
+                    <div className="flex justify-end mt-6">
+                        <Button onClick={handleSaveProfile}>
                             {tc("buttons.save")}
                         </Button>
                     </div>
-                </form>
-            </div>
+                </TabsContent>
+
+                <TabsContent value="password">
+                    <div className="grid gap-4">
+                        <FormField
+                            label={t("labels.currentPassword")}
+                            type="password"
+                            value={passwords.current}
+                            error={errors.currentPassword ? tRoot(errors.currentPassword) : undefined}
+                            onChange={(v) =>
+                                handlePasswordChange("current", v)
+                            }
+                        />
+
+                        <FormField
+                            label={t("labels.newPassword")}
+                            type="password"
+                            value={passwords.new}
+                            error={errors.newPassword ? tRoot(errors.newPassword) : undefined}
+                            onChange={(v) =>
+                                handlePasswordChange("new", v)
+                            }
+                        />
+
+                        <FormField
+                            label={t("labels.confirmPassword")}
+                            type="password"
+                            value={passwords.confirm}
+                            error={errors.confirmPassword ? tRoot(errors.confirmPassword) : undefined}
+                            onChange={(v) =>
+                                handlePasswordChange("confirm", v)
+                            }
+                        />
+
+                        <div className="flex justify-end">
+                            <Button onClick={handleChangePassword}>
+                                {t("buttons.updatePassword")}
+                            </Button>
+                        </div>
+                    </div>
+                </TabsContent>
+            </Tabs>
         </Modal>
     );
 }

@@ -8,11 +8,11 @@ import {
 
 export class UpdateRoleDto {
   @IsString({ message: "roles.form.name" })
-  @IsNotEmpty({ message: "messages.validations.nameRequired" })
+  @IsNotEmpty({ message: "roles.messages.validations.nameRequired" })
   name: string;
 
   @IsString({ message: "roles.form.slug" })
-  @IsNotEmpty({ message: "messages.validations.slugRequired" })
+  @IsNotEmpty({ message: "roles.messages.validations.slugRequired" })
   slug: string;
 
   @IsOptional()
@@ -25,5 +25,8 @@ export class UpdateRoleDto {
 
   @IsOptional()
   @IsArray()
+  @IsNotEmpty({
+    message: "roles.messages.validations.permissionsRequired",
+  })
   permissions?: string[];
 }

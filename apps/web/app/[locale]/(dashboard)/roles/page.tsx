@@ -1,17 +1,21 @@
 "use client";
 
+import Can from "@/components/auth/Can";
 import ComponentCard from "@/components/common/ComponentCard";
 import { useConfirm } from "@/components/common/ConfirmDialog";
 import Modal from "@/components/common/Modal";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
 import BasicTable from "@/components/tables/BasicTable";
 import Button from "@/components/ui/button/Button";
+import { PlusIcon } from "@/icons";
+import { handleFormError } from "@/lib/utils/handleFormError";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { getRoleColumns, type Role } from "./columns";
 import { usePermissions, useRoles } from "./hooks/useRoles";
-import RoleForm from "./RoleForm";
+import { getRoleColumns, type Role } from "./partial/columns";
+import RoleDetails from "./partial/details";
+import RoleForm from "./partial/form";
 import { getRoleById, toggleRoleStatus } from "./services/roles.api";
 
 /**
@@ -19,6 +23,7 @@ import { getRoleById, toggleRoleStatus } from "./services/roles.api";
  */
 export default function RolesPage() {
     const t = useTranslations("roles");
+    const tc = useTranslations("common");
     const tRoot = useTranslations();
     const { confirm } = useConfirm();
 
@@ -28,7 +33,7 @@ export default function RolesPage() {
     const [selectedRole, setSelectedRole] = useState<Role | null>(null);
     const [open, setOpen] = useState(false);
     const [loadingRole, setLoadingRole] = useState(false);
-
+    const [mode, setMode] = useState<"create" | "edit" | "view">("create");
     /**
      * Fetches complete role data including permission relationships 
      * before initializing the edit state.
@@ -38,6 +43,7 @@ export default function RolesPage() {
             setLoadingRole(true);
             const fullRole = await getRoleById(role.id);
             setSelectedRole(fullRole);
+            setMode("edit");
             setOpen(true);
         } catch (err) {
             console.error("Failed to load role details:", err);
@@ -49,6 +55,7 @@ export default function RolesPage() {
 
     const handleCreate = useCallback(() => {
         setSelectedRole(null);
+        setMode("create");
         setOpen(true);
     }, []);
 
@@ -65,16 +72,11 @@ export default function RolesPage() {
                         toast.success(t("messages.success.statusChange"));
                         refresh();
                     } catch (err: any) {
-                        const message = err?.message;
-
-                        if (Array.isArray(message)) {
-                            message.forEach((e: any) =>
-                                toast.error(e.message.includes(".") ? tRoot(e.message) : e.message)
-                            );
-                        } else {
-                            const errorKey = message || "messages.errors.toggleFailed";
-                            toast.error(errorKey.includes(".") ? tRoot(errorKey as any) : errorKey);
-                        }
+                        handleFormError({
+                            err,
+                            tRoot,
+                            tc,
+                        });
                     }
                 },
             });
@@ -82,9 +84,29 @@ export default function RolesPage() {
         [confirm, refresh, t, tRoot]
     );
 
+    const handleView = useCallback(async (role: Role) => {
+        try {
+            setLoadingRole(true);
+            const fullRole = await getRoleById(role.id);
+            setSelectedRole(fullRole);
+            setMode("view");
+            setOpen(true);
+        } catch {
+            toast.error(t("messages.errors.loadFailed"));
+        } finally {
+            setLoadingRole(false);
+        }
+    }, [t]);
+
     const columns = useMemo(
-        () => getRoleColumns({ onEdit: handleEdit, onToggleStatus: handleToggle, t }),
-        [handleEdit, handleToggle, t]
+        () =>
+            getRoleColumns({
+                onEdit: handleEdit,
+                onToggleStatus: handleToggle,
+                onView: handleView,
+                t,
+            }),
+        [handleEdit, handleToggle, handleView, t]
     );
 
     return (
@@ -95,40 +117,55 @@ export default function RolesPage() {
                 <ComponentCard
                     title={t("title")}
                     headerAction={
-                        <Button
-                            onClick={handleCreate}
-                            startIcon={<span>+</span>}
-                            size="sm"
-                            disabled={loadingRole}
-                        >
-                            {t("labels.create")}
-                        </Button>
+                        <Can permission="roles.create">
+                            <Button
+                                onClick={handleCreate}
+                                startIcon={<PlusIcon />}
+                                size="xs"
+                                disabled={loadingRole}
+                            >
+                                {t("labels.create")}
+                            </Button>
+                        </Can>
                     }
                 >
                     <BasicTable
                         data={roles}
                         columns={columns}
-                        showStatusFilter
-                        statusKey="isActive"
+                        exportSheetName={t("reportName")}
+                        exportFileName={t("reportName")}
                     />
                 </ComponentCard>
-            </div>
+            </div >
 
             <Modal
                 isOpen={open}
-                title={selectedRole ? t("form.editTitle") : t("form.createTitle")}
+                title={
+                    mode === "create"
+                        ? t("form.createTitle")
+                        : mode === "edit"
+                            ? t("form.editTitle")
+                            : t("form.viewTitle")
+                }
                 onClose={() => setOpen(false)}
             >
-                <RoleForm
-                    key={selectedRole?.id ?? "create"}
-                    role={selectedRole}
-                    availablePermissions={permissions}
-                    onSuccess={() => {
-                        setOpen(false);
-                        refresh();
-                    }}
-                />
+                {mode === "view" ? (
+                    <RoleDetails
+                        availablePermissions={permissions || []}
+                        role={selectedRole}
+                    />
+                ) : (
+                    <RoleForm
+                        key={selectedRole?.id ?? "create"}
+                        role={selectedRole}
+                        availablePermissions={permissions || []}
+                        onSuccess={() => {
+                            setOpen(false);
+                            refresh();
+                        }}
+                    />
+                )}
             </Modal>
-        </div>
+        </div >
     );
 }

@@ -83,8 +83,7 @@ export default function ResetPasswordPage() {
                         </Label>
                         <Input
                             type="password"
-                            value={password}
-                            required
+                            defaultValue={password}
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
@@ -95,8 +94,7 @@ export default function ResetPasswordPage() {
                         </Label>
                         <Input
                             type="password"
-                            value={confirmPassword}
-                            required
+                            defaultValue={confirmPassword}
                             onChange={(e) => setConfirmPassword(e.target.value)}
                         />
                     </div>

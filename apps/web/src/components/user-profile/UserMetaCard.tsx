@@ -60,9 +60,7 @@ export default function UserMetaCard({ user, onEdit, onUpdated }: Props) {
       const formData = new FormData();
       formData.append("file", selectedFile);
       await updateAvatar(formData);
-      cleanupPreview();
       setSelectedFile(null);
-      onUpdated?.();
       toast.success(t("editModal.messages.success.profileUpdated"));
 
       window.dispatchEvent(new Event("user:updated"));

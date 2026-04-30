@@ -254,37 +254,36 @@ export class AuthService {
         },
       },
     });
-
     if (!user) {
       throw new UnauthorizedException("common.messages.userNotFound");
     }
-
     const roles = user.roles.map((r) => r.role.slug);
-
     const permissions = user.roles.flatMap((r) =>
       r.role.permissions.map((p) => p.permission.module),
     );
-
+    const permissionsModule = user.roles.flatMap((r) =>
+      r.role.permissions.map(
+        (p) => `${p.permission.module}.${p.permission.action}`,
+      ),
+    );
     if (user.avatarUrl) {
       user.avatarUrl = user.avatarUrl.startsWith("http")
         ? user.avatarUrl
         : `${API_URL}${user.avatarUrl}`;
     }
-
     return {
       id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
       avatarUrl: user.avatarUrl,
-
       phone: user.phone,
       birthDate: user.birthDate,
       gender: user.gender,
       language: user.language,
-
       roles,
       permissions,
+      permissionsModule,
     };
   }
 }

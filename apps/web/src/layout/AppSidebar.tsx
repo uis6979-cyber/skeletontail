@@ -1,5 +1,6 @@
 "use client";
 import { getMe } from "@/lib/api/me";
+import { BookUser, UserCog2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,8 +10,7 @@ import { useSidebar } from "../context/SidebarContext";
 import {
   ChevronDownIcon,
   GridIcon,
-  HorizontaLDots,
-  UserIcon
+  HorizontaLDots
 } from "../icons/index";
 
 type NavItem = {
@@ -29,13 +29,13 @@ const navItems: NavItem[] = [
     module: "dashboard",
   },
   {
-    icon: <UserIcon />,
+    icon: <UserCog2 />,
     name: "sidebar.items.roles",
     path: "/roles",
     module: "roles",
   },
   {
-    icon: <UserIcon />,
+    icon: <BookUser />,
     name: "sidebar.items.users",
     path: "/users",
     module: "users",
@@ -183,7 +183,15 @@ const AppSidebar: React.FC = () => {
   );
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const isActive = useCallback((path: string) => path === pathname, [pathname]);
+  const normalize = (p: string) =>
+    p.replace(/^\/(es|en)/, "").replace(/\/$/, "") || "/";
+
+  const isActive = useCallback(
+    (path: string) => {
+      return normalize(pathname) === path;
+    },
+    [pathname]
+  );
 
   useEffect(() => {
     /**

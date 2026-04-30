@@ -1,3 +1,4 @@
+import QueryProvider from "@/providers/QueryProvider";
 import "@mui/material/styles";
 import "./globals.css";
 /**
@@ -16,7 +17,11 @@ export default function RootLayout({
 }) {
   return (
     <html suppressHydrationWarning>
-      <body>{children}</body>
+      <body>
+        <QueryProvider>
+          {children}
+        </QueryProvider>
+      </body>
     </html>
   );
 }

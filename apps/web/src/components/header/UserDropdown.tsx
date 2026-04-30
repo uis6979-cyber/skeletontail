@@ -3,6 +3,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+import Can from "../auth/Can";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 
@@ -128,20 +129,20 @@ export default function UserDropdown() {
             {user?.email || t("noEmail")}
           </span>
         </div>
-
-        <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
-          <li>
-            <DropdownItem
-              onItemClick={closeDropdown}
-              tag="a"
-              href="/profile"
-              className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
-            >
-              {t("editProfile")}
-            </DropdownItem>
-          </li>
-        </ul>
-
+        <Can permission="profile.edit">
+          <ul className="flex flex-col gap-1 pt-4 pb-3 border-b border-gray-200 dark:border-gray-800">
+            <li>
+              <DropdownItem
+                onItemClick={closeDropdown}
+                tag="a"
+                href="/profile"
+                className="flex items-center gap-3 px-3 py-2 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
+              >
+                {t("editProfile")}
+              </DropdownItem>
+            </li>
+          </ul>
+        </Can>
         <button
           onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"

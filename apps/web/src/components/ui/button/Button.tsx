@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  size?: "sm" | "md";
+  size?: "xs" | "sm" | "md";
   variant?: "primary" | "outline" | "danger" | "success";
   startIcon?: ReactNode;
   endIcon?: ReactNode;
@@ -22,6 +22,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const sizeClasses = {
+      xs: "px-3 py-1.5 text-xs h-8",
       sm: "px-4 py-3 text-sm",
       md: "px-5 py-3.5 text-sm",
     };

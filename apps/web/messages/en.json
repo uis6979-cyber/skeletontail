@@ -65,58 +65,6 @@
       }
     }
   },
-  "common": {
-    "buttons": {
-      "accept": "Accept",
-      "cancel": "Cancel",
-      "save": "Save",
-      "delete": "Delete",
-      "edit": "Edit",
-      "confirm": "Confirm",
-      "close": "Close",
-      "back": "Back"
-    },
-    "messages": {
-      "success": "Operation completed successfully",
-      "error": "An unexpected error occurred. Please try again",
-      "loading": "Loading...",
-      "unauthorized": "You are not authorized to perform this action",
-      "userNotFound": "User not found.",
-      "noData": "No data available",
-      "apiRunning": "API running 🚀",
-      "confirmTitle": "Confirm Action",
-      "confirmBody": "Are you sure you want to proceed?"
-    },
-    "table": {
-      "searchPlaceholder": "Search...",
-      "export": "Export",
-      "statusAll": "All",
-      "show": "Show",
-      "entries": "Entries",
-      "defaultFilename": "table"
-    },
-    "languages": {
-      "en": "English",
-      "es": "Spanish"
-    },
-    "actions": {
-      "edit": "Edit",
-      "delete": "Delete",
-      "disable": "Disable",
-      "enable": "Enable"
-    },
-    "status": { "active": "Active", "inactive": "Inactive" },
-    "userDropdown": {
-      "userNamePlaceholder": "User Name",
-      "userEmailPlaceholder": "user@example.com",
-      "noEmail": "No email",
-      "avatarAlt": "User avatar",
-      "editProfile": "Edit profile",
-      "accountSettings": "Account settings",
-      "support": "Support",
-      "signOut": "Sign out"
-    }
-  },
   "resetPassword": {
     "title": "Recover Password",
     "titleNew": "Set New Password",
@@ -147,6 +95,90 @@
         "failedToSendResetEmail": "Failed to send reset email. Please try again later.",
         "unknownError": "An unexpected error occurred"
       }
+    }
+  },
+  "common": {
+    "buttons": {
+      "accept": "Accept",
+      "cancel": "Cancel",
+      "save": "Save",
+      "delete": "Delete",
+      "edit": "Edit",
+      "confirm": "Confirm",
+      "close": "Close",
+      "back": "Back"
+    },
+    "placeholders": {
+      "select": "Select an option",
+      "date": "Select date"
+    },
+    "table": {
+      "searchPlaceholder": "Search...",
+      "export": "Export",
+      "statusAll": "All",
+      "show": "Show",
+      "entries": "Entries",
+      "defaultFilename": "table",
+      "defaultSheetName": "Data",
+      "previous": "Previous",
+      "next": "Next",
+      "sortColumn": "Sort by {name}",
+      "paginationInfo": "Showing {start} to {end} of {total} entries",
+      "paginationLabel": "Pagination",
+      "teamMemberAlt": "Team member {number}",
+      "user": "User",
+      "projectName": "Project Name",
+      "team": "Team",
+      "status": "Status",
+      "budget": "Budget"
+    },
+    "languages": {
+      "en": "English",
+      "es": "Spanish"
+    },
+    "messages": {
+      "success": "Operation completed successfully",
+      "error": "An unexpected error occurred. Please try again",
+      "loading": "Loading...",
+      "unauthorized": "You are not authorized to perform this action",
+      "userNotFound": "User not found.",
+      "noData": "No data available",
+      "apiRunning": "API running 🚀",
+      "confirmTitle": "Confirm Action",
+      "confirmBody": "Are you sure you want to proceed?",
+      "errors": {
+        "fieldsMustMatch": "The fields must match"
+      }
+    },
+    "actions": {
+      "edit": "Edit",
+      "delete": "Delete",
+      "disable": "Disable",
+      "enable": "Enable"
+    },
+    "status": { 
+      "active": "Active", 
+      "inactive": "Inactive",
+      "statusAll": "All",
+      "pending": "Pending",
+      "cancel": "Cancel"
+    },
+    "userDropdown": {
+      "userNamePlaceholder": "User Name",
+      "userEmailPlaceholder": "user@example.com",
+      "noEmail": "No email",
+      "avatarAlt": "User avatar",
+      "editProfile": "Edit profile",
+      "accountSettings": "Account settings",
+      "support": "Support",
+      "signOut": "Sign out"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "metadata": {
+      "title": "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
+      "description": "This is Next.js Home for TailAdmin Dashboard Template"
     }
   },
   "header": {
@@ -201,13 +233,6 @@
     "description": "Leading Tailwind CSS Admin Template with 400+ UI Component and Pages.",
     "button": "Upgrade To Pro"
   },
-  "dashboard": {
-    "title": "Dashboard",
-    "metadata": {
-      "title": "Next.js E-commerce Dashboard | TailAdmin - Next.js Dashboard Template",
-      "description": "This is Next.js Home for TailAdmin Dashboard Template"
-    }
-  },
   "profile": {
     "title": "Profile",
     "metadata": {
@@ -227,13 +252,20 @@
       "title": "Edit Personal Information",
       "subtitle": "Update your details to keep your profile up-to-date.",
       "sectionTitle": "Personal Information",
+      "tabs": {
+        "profile": "Profile",
+        "password": "Password"
+      },
       "labels": {
         "firstName": "First Name *",
         "lastName": "Last Name *",
         "email": "Email *",
         "phone": "Phone *",
         "birthDate": "Birth Date",
-        "gender": "Gender"
+        "gender": "Gender",
+        "currentPassword": "Current Password",
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password"
       },
       "placeholders": {
         "gender": "Select"
@@ -242,6 +274,9 @@
         "male": "Male",
         "female": "Female"
       },
+      "buttons": {
+        "updatePassword": "Update Password"
+      },
       "messages": {
         "errors": {
           "firstNameRequired": "First name is required",
@@ -249,10 +284,20 @@
           "emailRequired": "Email is required",
           "emailInvalid": "Invalid email format",
           "phoneRequired": "Phone is required",
-          "genderRequired": "Gender is required"
+          "genderRequired": "Gender is required",
+          "passwordsDontMatch": "Passwords do not match",
+          "birthDateInvalid": "Birth date must be a valid date",
+          "genderInvalid": "Gender must be male or female",
+          "currentPasswordRequired": "Current password is required",
+          "currentPasswordInvalid": "Invalid current password",
+          "newPasswordRequired": "New password is required",
+          "newPasswordMin": "New password must be at least 8 characters",
+          "confirmPasswordRequired": "Confirm password is required",
+          "passwordMustBeDifferent": "New password must be different from the current one"
         },
         "success": {
-          "profileUpdated": "Profile updated successfully"
+          "profileUpdated": "Profile updated successfully",
+          "passwordUpdated": "Password updated successfully"
         }
       }
     },
@@ -296,7 +341,7 @@
     "developer": { "name": "Developer", "description": "Full system access" },
     "user": { "name": "User", "description": "General system access" },
     "labels": {
-      "name": "Role",
+      "name": "Name",
       "slug": "Slug",
       "description": "Description",
       "status": "Status",
@@ -304,7 +349,9 @@
       "create": "Create Role",
       "edit": "Edit Role"
     },
+    "reportName": "roles_report",
     "form": {
+      "viewTitle": "View Role",
       "editTitle": "Edit Role",
       "createTitle": "Create Role",
       "slugLabel": "Slug",
@@ -325,9 +372,13 @@
       "validations": {
         "nameRequired": "Role name is required",
         "slugRequired": "Slug is required",
-        "descriptionRequired": "Description is required"
+        "permissionsRequired": "At least one permission is required",
+        "descriptionRequired": "Description is required",
+        "slugAlreadyExists": "Role slug already exists",
+        "nameAlreadyExists": "Role name already exists"
       },
       "errors": {
+        "roleNotFound": "Role not found",
         "loadFailed": "Failed to load role details",
         "fetchFailed": "Failed to fetch roles",
         "toggleFailed": "Failed to toggle role status",
@@ -352,14 +403,21 @@
     "title": "Users",
     "create": "Create User",
     "noUsers": "No users found",
+    "reportName": "users_report",
     "labels": {
+      "fullName": "Full Name",
       "firstName": "First Name",
       "lastName": "Last Name",
       "email": "Email",
       "password": "Password",
+      "birthDay": "Birth Day",
+      "gender": "Gender",
+      "phone": "Phone",
       "status": "Status",
       "role": "Role",
-      "actions": "Actions"
+      "actions": "Actions",
+      "create": "Create User",
+      "edit": "Edit User"
     },
     "table": {
       "name": "Name",
@@ -367,6 +425,57 @@
       "role": "Role",
       "status": "Status",
       "actions": "Actions"
+    },
+    "form": {
+      "editTitle": "Edit User",
+      "createTitle": "Create User",
+      "firstNameLabel": "First Name",
+      "lastNameLabel": "Last Name",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "birthDateLabel": "Birth Date",
+      "genderLabel": "Gender",
+      "phoneLabel": "Phone",
+      "rolesLabel": "Roles",
+      "viewTitle":"View Role",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "confirmPasswordLabel": "Confirm password",
+      "changePassword": "Change password"
+    },
+    "messages": {
+      "enable": "Active",
+      "disable": "Inactive",
+      "validations": {
+        "firstNameRequired": "First name is required",
+        "lastNameRequired":"Last name is required",
+        "emailRequired":"Email is required",
+        "passwordRequired":"Password is required",
+        "confirmPasswordRequired":"Confirm password is required",
+        "passwordsDontMatch":"Passwords do not match",
+        "birthDateRequired":"Birth date is required",
+        "genderInvalid":"Gender must be male or female",
+        "invalidEmailFormat":"Invalid email format",
+        "invalidGender": "Select an valid gener",
+        "passwordMinLength":"Password must be at least 8 characters.",
+        "confirmPasswordMinLength": "The password confirmation must be at least 8 characters.",
+        "passwordMismatch": "The passwords do not match."
+      },
+      "success": {
+        "updateSuccess": "User updated successfully",
+        "createSuccess": "User created successfully",
+        "statusChange": "User status updated successfully",
+        "passwordChanged": "Password updated successfully"
+      },
+      "errors": {
+        "loadFailed": "Failed to load user details",
+        "toggleFailed": "Failed to toggle user status"
+      },
+      "confirm": {
+        "toggleTitle": "Update User Status",
+        "disable": "Are you sure you want to disable this user?",
+        "enable": "Are you sure you want to enable this user?"
+      }
     }
   }
 }
