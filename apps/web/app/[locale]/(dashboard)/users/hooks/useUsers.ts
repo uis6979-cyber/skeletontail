@@ -22,7 +22,7 @@ export interface Permission {
   module?: string;
 }
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 /**
  * Orchestrates system users data fetching and state synchronization.

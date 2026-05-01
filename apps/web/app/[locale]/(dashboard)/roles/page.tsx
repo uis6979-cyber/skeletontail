@@ -34,6 +34,7 @@ export default function RolesPage() {
     const [open, setOpen] = useState(false);
     const [loadingRole, setLoadingRole] = useState(false);
     const [mode, setMode] = useState<"create" | "edit" | "view">("create");
+    const [errors, setErrors] = useState<Record<string, string>>({});
     /**
      * Fetches complete role data including permission relationships 
      * before initializing the edit state.
@@ -74,8 +75,9 @@ export default function RolesPage() {
                     } catch (err: any) {
                         handleFormError({
                             err,
+                            setErrors,
                             tRoot,
-                            tc,
+                            tCommon: tc,
                         });
                     }
                 },

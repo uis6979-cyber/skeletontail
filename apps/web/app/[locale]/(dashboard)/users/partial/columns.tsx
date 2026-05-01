@@ -4,20 +4,7 @@ import Can from "@/components/auth/Can";
 import Tooltip from "@/components/common/Tooltip";
 import type { Column } from "@/components/tables/BasicTable";
 import { EyeIcon, Pencil, UserKeyIcon } from "lucide-react";
-
-export type User = {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    avatarUrl: string;
-    birthDay?: string | null;
-    phone?: string | null;
-    gender?: string | null;
-    language?: string | null;
-    isActive: boolean;
-    createdAt: string;
-};
+import type { User } from "../../../../../src/shared/types/user";
 
 type Props = {
     onEdit: (user: User) => void;
